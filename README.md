@@ -169,13 +169,13 @@ Suggests lawful compromise paths.
 
 | Feature | Description |
 |----------|-------------|
-| 🗣 Multilingual Voice Mode | Speak in Hindi, Marathi, Tamil, Telugu, etc. |
-| 📄 Complaint Draft Generator | Ready-to-use formatted drafts |
-| 📍 Legal Aid Locator | Nearest free legal center |
-| 🏛 Scheme Eligibility Checker | Personalized scheme discovery |
-| ⏳ Case Timeline Predictor | Expected duration guidance |
-| 📚 Judgment Simplifier | Easy-to-read summaries |
-| 🤝 AI Mediation | Guided dispute resolution |
+|  Multilingual Voice Mode | Speak in Hindi, Marathi, Tamil, Telugu, etc. |
+|  Complaint Draft Generator | Ready-to-use formatted drafts |
+|  Legal Aid Locator | Nearest free legal center |
+|  Scheme Eligibility Checker | Personalized scheme discovery |
+|  Case Timeline Predictor | Expected duration guidance |
+|  Judgment Simplifier | Easy-to-read summaries |
+|  AI Mediation | Guided dispute resolution |
 
 ---
 
@@ -191,12 +191,12 @@ Suggests lawful compromise paths.
 
 ## 🏆 Why It Stands Out
 
-- 🚀 Access to Justice at Scale  
-- 📜 Policy relevance & governance impact  
-- 🌾 Rural empowerment focus  
-- 🤖 Advanced AI + Social Good  
-- 🏛 Direct integration with public datasets  
-- 🇮🇳 Designed for India’s legal complexity  
+-  Access to Justice at Scale  
+-  Policy relevance & governance impact  
+-  Rural empowerment focus  
+-  Advanced AI + Social Good  
+-  Direct integration with public datasets  
+-  Designed for India’s legal complexity  
 
 ---
 
