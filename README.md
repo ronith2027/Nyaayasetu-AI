@@ -1,4 +1,4 @@
-# ⚖️ NyayaSetu AI – Legal Access for Every Citizen
+# ⚖️ NyaayaSetu AI – Legal Access for Every Citizen
 
 An AI-powered legal companion designed to make justice simple, accessible, and understandable for every Indian citizen — especially rural and underserved communities.
 
@@ -169,13 +169,13 @@ Suggests lawful compromise paths.
 
 | Feature | Description |
 |----------|-------------|
-|  Multilingual Voice Mode | Speak in Hindi, Marathi, Tamil, Telugu, etc. |
-|  Complaint Draft Generator | Ready-to-use formatted drafts |
-|  Legal Aid Locator | Nearest free legal center |
-|  Scheme Eligibility Checker | Personalized scheme discovery |
-|  Case Timeline Predictor | Expected duration guidance |
-|  Judgment Simplifier | Easy-to-read summaries |
-|  AI Mediation | Guided dispute resolution |
+| Multilingual Voice Mode | Speak in Hindi, Marathi, Tamil, Telugu, etc. |
+| Complaint Draft Generator | Ready-to-use formatted drafts |
+| Legal Aid Locator | Nearest free legal center |
+| Scheme Eligibility Checker | Personalized scheme discovery |
+| Case Timeline Predictor | Expected duration guidance |
+| Judgment Simplifier | Easy-to-read summaries |
+| AI Mediation | Guided dispute resolution |
 
 ---
 
