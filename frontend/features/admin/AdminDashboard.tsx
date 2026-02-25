@@ -6,7 +6,6 @@ import { FlaggedList } from './FlaggedList';
 import { ReviewModal } from './ReviewModal';
 import { api } from '../../lib/api';
 import { Loader } from '../../components/Loader';
-import '../../app/Dashboard.css';
 
 interface FlaggedItem {
     id: string;

@@ -5,7 +5,6 @@ import { useLanguage } from '../../lib/LanguageContext';
 import { LocatorForm } from './LocatorForm';
 import { LocatorResults } from './LocatorResults';
 import { api } from '../../lib/api';
-import '../../app/Dashboard.css';
 
 export const LocatorPage: React.FC = () => {
     const { t } = useLanguage();
