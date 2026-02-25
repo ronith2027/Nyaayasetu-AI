@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { ThemeProvider } from './theme-provider';
 import { ThemeToggle } from './theme-toggle';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function ClientLayoutWrapper({
     children,
@@ -33,21 +34,28 @@ export default function ClientLayoutWrapper({
                             <Link href="/" className="nav-item">
                                 Dashboard
                             </Link>
-                            <Link href="/cases" className="nav-item">
-                                My Cases
+                            <Link href="/locator" className="nav-item">
+                                Locator
                             </Link>
                             <Link href="/schemes" className="nav-item">
                                 Schemes
+                            </Link>
+                            <Link href="/admin" className="nav-item text-red-600 dark:text-red-400 font-semibold border border-red-200 dark:border-red-900/50 rounded-full px-3 py-1 ml-2">
+                                Admin
                             </Link>
                         </div>
 
                         {/* Actions & Mobile Trigger */}
                         <div className="flex items-center gap-5 md:gap-8">
+                            <div className="hidden md:block">
+                                <LanguageSwitcher />
+                            </div>
+
                             <button className="sign-btn">
                                 Sign / App
                             </button>
-                            
-                            <button 
+
+                            <button
                                 className="mobile-menu-btn md:hidden"
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             >
@@ -61,16 +69,22 @@ export default function ClientLayoutWrapper({
 
                         {/* Mobile Dropdown Menu */}
                         {isMobileMenuOpen && (
-                            <div className="mobile-dropdown">
+                            <div className="mobile-dropdown space-y-2">
                                 <Link href="/" className="mobile-nav-item" onClick={() => setIsMobileMenuOpen(false)}>
                                     Dashboard
                                 </Link>
-                                <Link href="/cases" className="mobile-nav-item" onClick={() => setIsMobileMenuOpen(false)}>
-                                    My Cases
+                                <Link href="/locator" className="mobile-nav-item" onClick={() => setIsMobileMenuOpen(false)}>
+                                    Locator
                                 </Link>
                                 <Link href="/schemes" className="mobile-nav-item" onClick={() => setIsMobileMenuOpen(false)}>
                                     Schemes
                                 </Link>
+                                <Link href="/admin" className="mobile-nav-item text-red-600 dark:text-red-400" onClick={() => setIsMobileMenuOpen(false)}>
+                                    Admin
+                                </Link>
+                                <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-800">
+                                    <LanguageSwitcher />
+                                </div>
                             </div>
                         )}
                     </div>
