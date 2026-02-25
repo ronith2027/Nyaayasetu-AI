@@ -11,16 +11,39 @@ export default function Dashboard() {
     return (
         <div className="dashboard-container">
             {/* Dynamic Hero Section */}
-            <div className="hero-section">
-                <div className="hero-badge">
-                    Citizen Dashboard
+            <div className="hero-section flex flex-col lg:flex-row items-center justify-between gap-12">
+                <div className="hero-content-left lg:w-3/5">
+                    <div className="hero-badge">
+                        Citizen Dashboard
+                    </div>
+                    <h1 className="hero-title">
+                        Justice & Welfare <br className="hidden md:block" /> Formulated by AI.
+                    </h1>
+                    <p className="hero-subtitle">
+                        Instantly draft legal complaints or discover government schemes you are eligible for. Access to your rights made effortless.
+                    </p>
                 </div>
-                <h1 className="hero-title">
-                    Justice & Welfare <br className="hidden md:block" /> Formulated by AI.
-                </h1>
-                <p className="hero-subtitle">
-                    Instantly draft legal complaints or discover government schemes you are eligible for. Access to your rights made effortless.
-                </p>
+                
+                <div className="hero-image-right hidden lg:flex lg:w-2/5 justify-end items-center">
+                    <div className="image-grid relative w-full max-w-[400px] h-[450px]">
+                        <div className="img-container main-img">
+                            <img 
+                                src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop" 
+                                alt="Legal" 
+                                className="hero-img"
+                            />
+                        </div>
+                        <div className="img-container second-img">
+                            <img 
+                                src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop" 
+                                alt="AI Technology" 
+                                className="hero-img"
+                            />
+                        </div>
+                        {/* Decorative background element */}
+                        <div className="hero-blob"></div>
+                    </div>
+                </div>
             </div>
 
             {/* Interactive Tab Navigation */}
