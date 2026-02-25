@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import ComplaintFeature from '../features/complaint';
 import SchemeFeature from '../features/scheme';
+import ChatFeature from '../features/chat';
 import './Dashboard.css';
 
 export default function Dashboard() {
-    const [activeTab, setActiveTab] = useState<'complaint' | 'scheme'>('complaint');
+    const [activeTab, setActiveTab] = useState<'complaint' | 'scheme' | 'chat'>('complaint');
 
     return (
         <div className="dashboard-container">
@@ -20,7 +21,7 @@ export default function Dashboard() {
                         Justice & Welfare <br className="hidden md:block" /> Formulated by AI.
                     </h1>
                     <p className="hero-subtitle">
-                        Instantly draft legal complaints or discover government schemes you are eligible for. Access to your rights made effortless.
+                        Instantly draft legal complaints, discover government schemes, or chat with our legal assistant. Access to your rights made effortless.
                     </p>
                 </div>
                 
@@ -71,6 +72,17 @@ export default function Dashboard() {
                             Find Schemes
                         </div>
                     </button>
+                    <button
+                        onClick={() => setActiveTab('chat')}
+                        className={`tab-button ${activeTab === 'chat' ? 'active-complaint' : 'inactive'}`}
+                    >
+                        <div className="flex items-center gap-2">
+                            <svg className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            Legal AI Assistant
+                        </div>
+                    </button>
                 </div>
             </div>
 
@@ -85,6 +97,12 @@ export default function Dashboard() {
                 {activeTab === 'scheme' && (
                     <div className="feature-wrapper">
                         <SchemeFeature />
+                    </div>
+                )}
+
+                {activeTab === 'chat' && (
+                    <div className="feature-wrapper">
+                        <ChatFeature />
                     </div>
                 )}
             </div>
