@@ -5,25 +5,27 @@ import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import StepThree from './StepThree';
 import ComplaintPreview from './ComplaintPreview';
+import { useLanguage } from '../../lib/LanguageContext';
 
 const ComplaintWizard: React.FC = () => {
-  const { 
-    step, 
-    formData, 
-    loading, 
-    error, 
-    draft, 
-    updateFormData, 
-    nextStep, 
-    prevStep, 
-    submitComplaint 
+  const { t } = useLanguage();
+  const {
+    step,
+    formData,
+    loading,
+    error,
+    draft,
+    updateFormData,
+    nextStep,
+    prevStep,
+    submitComplaint
   } = useComplaint();
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-center">Legal Complaint Generator</h1>
-        <p className="text-gray-600 text-center mt-2">Generate a professional draft for your legal issues</p>
+        <h1 className="text-3xl font-bold text-center">{t('complaintGeneratorTitle')}</h1>
+        <p className="text-gray-600 text-center mt-2">{t('complaintGeneratorSubtitle')}</p>
       </div>
 
       {error && (
@@ -33,27 +35,27 @@ const ComplaintWizard: React.FC = () => {
       )}
 
       {step === 1 && (
-        <StepOne 
-          data={formData.complainant} 
-          updateData={updateFormData} 
-          onNext={nextStep} 
+        <StepOne
+          data={formData.complainant}
+          updateData={updateFormData}
+          onNext={nextStep}
         />
       )}
 
       {step === 2 && (
-        <StepTwo 
-          data={formData} 
-          updateData={updateFormData} 
-          onNext={nextStep} 
-          onPrev={prevStep} 
+        <StepTwo
+          data={formData}
+          updateData={updateFormData}
+          onNext={nextStep}
+          onPrev={prevStep}
         />
       )}
 
       {step === 3 && (
-        <StepThree 
-          data={formData} 
-          updateData={updateFormData} 
-          onSubmit={submitComplaint} 
+        <StepThree
+          data={formData}
+          updateData={updateFormData}
+          onSubmit={submitComplaint}
           onPrev={prevStep}
           loading={loading}
         />

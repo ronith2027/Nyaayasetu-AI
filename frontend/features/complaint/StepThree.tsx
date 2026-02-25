@@ -2,6 +2,7 @@
 import React from 'react';
 import { Loader } from '../../components/Loader';
 import { ComplaintData } from './types';
+import { useLanguage } from '../../lib/LanguageContext';
 import './Complaint.css';
 
 interface StepThreeProps {
@@ -13,6 +14,8 @@ interface StepThreeProps {
 }
 
 const StepThree: React.FC<StepThreeProps> = ({ data, updateData, onSubmit, onPrev, loading }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="complaint-wizard">
       <div className="wizard-progress">
@@ -22,26 +25,26 @@ const StepThree: React.FC<StepThreeProps> = ({ data, updateData, onSubmit, onPre
       </div>
 
       <div className="complaint-card">
-        <h2 className="complaint-title">Step 3: Legal Grounds & Relief</h2>
+        <h2 className="complaint-title">{t('step3Title')}</h2>
 
         <div className="form-grid">
           <div className="form-group full-width">
-            <label className="form-label">Legal Grounds (Optional)</label>
+            <label className="form-label">{t('legalGroundsLabel')}</label>
             <textarea
               className="form-textarea"
               style={{ minHeight: '80px' }}
-              placeholder="Any specific laws or rules violated?"
+              placeholder={t('legalGroundsPlaceholder')}
               value={data.legalGrounds || ''}
               onChange={(e: any) => updateData({ legalGrounds: e.target.value })}
             />
           </div>
 
           <div className="form-group full-width">
-            <label className="form-label">Relief Sought</label>
+            <label className="form-label">{t('reliefLabel')}</label>
             <textarea
               className="form-textarea"
               style={{ minHeight: '80px' }}
-              placeholder="What do you want the authority to do? (e.g. Please refund my money)"
+              placeholder={t('reliefPlaceholder')}
               value={data.relief || ''}
               onChange={(e: any) => updateData({ relief: e.target.value })}
             />
@@ -57,20 +60,20 @@ const StepThree: React.FC<StepThreeProps> = ({ data, updateData, onSubmit, onPre
             onChange={(e: any) => updateData({ declaration: e.target.checked })}
           />
           <label htmlFor="declaration" className="checkbox-label">
-            I hereby declare that the facts stated above are true to the best of my knowledge and belief.
+            {t('declarationText')}
           </label>
         </div>
 
         <div className="form-actions">
           <button onClick={onPrev} className="btn btn-secondary">
-            &larr; Back
+            {t('backBtn')}
           </button>
           <button
             onClick={onSubmit}
             disabled={loading || !data.declaration}
             className="btn btn-success"
           >
-            {loading ? <Loader /> : "Generate Legal Valid Complaint"}
+            {loading ? <Loader /> : t('generateComplaintBtn')}
           </button>
         </div>
       </div>

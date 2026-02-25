@@ -1,6 +1,8 @@
 
 // Minimal API wrapper as per architecture requirements
-// Minimal API wrapper as per architecture requirements
+import { locatorHandler } from '../../backend/functions/locator/locatorHandler';
+import { adminFlaggedHandler, adminReviewHandler } from '../../backend/functions/admin/adminHandler';
+
 export const api = {
   post: async <T>(url: string, body: any): Promise<{ success: boolean, data: T | null, error: string | null }> => {
     try {
@@ -41,6 +43,21 @@ export const api = {
           } as unknown as T,
           error: null
         };
+      }
+
+      if (url === '/locator') {
+        const result = await locatorHandler(body);
+        return result as unknown as { success: boolean, data: T | null, error: string | null };
+      }
+
+      if (url === '/admin/flagged') {
+        const result = await adminFlaggedHandler();
+        return result as unknown as { success: boolean, data: T | null, error: string | null };
+      }
+
+      if (url === '/admin/review') {
+        const result = await adminReviewHandler(body);
+        return result as unknown as { success: boolean, data: T | null, error: string | null };
       }
 
       return { success: true, data: null, error: "Endpoint not specifically mocked." };
