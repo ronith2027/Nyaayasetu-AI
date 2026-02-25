@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ComplainantDetails, ComplaintData } from './types';
+import { useLanguage } from '../../lib/LanguageContext';
 import './Complaint.css';
 
 interface StepOneProps {
@@ -10,6 +11,8 @@ interface StepOneProps {
 }
 
 const StepOne: React.FC<StepOneProps> = ({ data, updateData, onNext }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="complaint-wizard">
       <div className="wizard-progress">
@@ -19,57 +22,57 @@ const StepOne: React.FC<StepOneProps> = ({ data, updateData, onNext }) => {
       </div>
 
       <div className="complaint-card">
-        <h2 className="complaint-title">Step 1: Your Details</h2>
+        <h2 className="complaint-title">{t('step1Title')}</h2>
 
         <div className="form-grid">
           <div className="form-group">
-            <label className="form-label">Full Name</label>
+            <label className="form-label">{t('fullNameLabel')}</label>
             <input
               type="text"
               className="form-input"
               value={data.name || ''}
               onChange={(e: any) => updateData({ complainant: { ...data, name: e.target.value } })}
-              placeholder="Enter your full name"
+              placeholder={t('fullNamePlaceholder')}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Phone Number</label>
+            <label className="form-label">{t('phoneLabel')}</label>
             <input
               type="tel"
               className="form-input"
               value={data.phone || ''}
               onChange={(e: any) => updateData({ complainant: { ...data, phone: e.target.value } })}
-              placeholder="Enter your phone number"
+              placeholder={t('phonePlaceholder')}
             />
           </div>
 
           <div className="form-group full-width">
-            <label className="form-label">Address</label>
+            <label className="form-label">{t('addressLabel')}</label>
             <textarea
               className="form-textarea"
               style={{ minHeight: '80px' }}
               value={data.address || ''}
               onChange={(e: any) => updateData({ complainant: { ...data, address: e.target.value } })}
-              placeholder="Enter your complete address"
+              placeholder={t('addressPlaceholder')}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">City</label>
+            <label className="form-label">{t('cityLabel')}</label>
             <input
               type="text"
               className="form-input"
               value={data.city || ''}
               onChange={(e: any) => updateData({ complainant: { ...data, city: e.target.value } })}
-              placeholder="Enter your city"
+              placeholder={t('cityPlaceholder')}
             />
           </div>
         </div>
 
         <div className="form-actions" style={{ justifyContent: 'flex-end' }}>
           <button onClick={onNext} className="btn btn-primary">
-            Next Step &rarr;
+            {t('nextStepBtn')}
           </button>
         </div>
       </div>
