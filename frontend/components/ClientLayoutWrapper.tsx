@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ThemeProvider } from './theme-provider';
 import { ThemeToggle } from './theme-toggle';
 
@@ -11,6 +12,7 @@ export default function ClientLayoutWrapper({
     children: React.ReactNode;
 }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const pathname = usePathname();
 
     return (
         <ThemeProvider>
@@ -30,14 +32,17 @@ export default function ClientLayoutWrapper({
 
                         {/* Desktop Nav Routing */}
                         <div className="nav-links">
-                            <Link href="/" className="nav-item">
+                            <Link href="/" className={`nav-item ${pathname === '/' ? 'active' : ''}`}>
                                 Dashboard
                             </Link>
-                            <Link href="/cases" className="nav-item">
+                            <Link href="/cases" className={`nav-item ${pathname === '/cases' ? 'active' : ''}`}>
                                 My Cases
                             </Link>
-                            <Link href="/schemes" className="nav-item">
+                            <Link href="/schemes" className={`nav-item ${pathname === '/schemes' ? 'active' : ''}`}>
                                 Schemes
+                            </Link>
+                            <Link href="/chat" className={`nav-item ${pathname === '/chat' ? 'active' : ''}`}>
+                                My Lawyer
                             </Link>
                         </div>
 
@@ -62,14 +67,17 @@ export default function ClientLayoutWrapper({
                         {/* Mobile Dropdown Menu */}
                         {isMobileMenuOpen && (
                             <div className="mobile-dropdown">
-                                <Link href="/" className="mobile-nav-item" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Link href="/" className={`mobile-nav-item ${pathname === '/' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                                     Dashboard
                                 </Link>
-                                <Link href="/cases" className="mobile-nav-item" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Link href="/cases" className={`mobile-nav-item ${pathname === '/cases' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                                     My Cases
                                 </Link>
-                                <Link href="/schemes" className="mobile-nav-item" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Link href="/schemes" className={`mobile-nav-item ${pathname === '/schemes' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                                     Schemes
+                                </Link>
+                                <Link href="/chat" className={`mobile-nav-item ${pathname === '/chat' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                                    My Lawyer
                                 </Link>
                             </div>
                         )}

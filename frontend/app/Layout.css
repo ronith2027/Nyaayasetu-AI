@@ -59,6 +59,7 @@
     letter-spacing: -0.025em;
     background: linear-gradient(to right, var(--primary), var(--foreground));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -88,6 +89,10 @@
 
 .nav-item:hover {
     color: var(--foreground);
+}
+
+.nav-item.active {
+    color: var(--primary);
 }
 
 .nav-item::after {
@@ -183,6 +188,11 @@
 
 .mobile-nav-item:hover {
     color: var(--foreground);
+    background: var(--accent);
+}
+
+.mobile-nav-item.active {
+    color: var(--primary);
     background: var(--accent);
 }
 
