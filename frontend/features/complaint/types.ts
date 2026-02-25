@@ -21,7 +21,7 @@ export interface ComplaintData {
 }
 
 export interface ComplaintDraft {
-  complaint_text: string;
-  sections_referenced: string[];
-  download_url: string;
+  draftId: string;
+  formattedDraft: string;
+  timestamp: string;
 }

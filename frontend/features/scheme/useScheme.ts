@@ -8,8 +8,7 @@ export const useScheme = () => {
         state: '',
         category: '',
         annualIncome: 0,
-        occupation: '',
-        gender: ''
+        occupation: ''
     });
     const [schemes, setSchemes] = useState<Scheme[]>([]);
     const [loading, setLoading] = useState(false);

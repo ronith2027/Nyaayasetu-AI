@@ -57,20 +57,6 @@ const SchemeForm: React.FC<SchemeFormProps> = ({ data, updateData, onSubmit, loa
                     </div>
 
                     <div className="scheme-input-group">
-                        <label className="scheme-label">Gender</label>
-                        <select
-                            className="scheme-select"
-                            value={data.gender || ''}
-                            onChange={(e: any) => updateData({ gender: e.target.value })}
-                        >
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div className="scheme-input-group">
                         <label className="scheme-label">Annual Income (₹)</label>
                         <input
                             type="number"
