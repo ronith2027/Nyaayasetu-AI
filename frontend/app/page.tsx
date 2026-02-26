@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import ComplaintFeature from '../features/complaint';
 import SchemeFeature from '../features/scheme';
 import './Dashboard.css';
+import { useLanguage } from '../lib/LanguageContext';
 
 export default function Dashboard() {
     const [activeTab, setActiveTab] = useState<'complaint' | 'scheme'>('complaint');
+    const { t } = useLanguage();
 
     return (
         <div className="dashboard-container">
@@ -14,13 +16,13 @@ export default function Dashboard() {
             <div className="hero-section flex flex-col lg:flex-row items-center justify-between gap-12">
                 <div className="hero-content-left lg:w-3/5">
                     <div className="hero-badge">
-                        Citizen Dashboard
+                        {t('citizenBadge')}
                     </div>
                     <h1 className="hero-title">
-                        Justice & Welfare <br className="hidden md:block" /> Formulated by AI.
+                        {t('heroTitle')}
                     </h1>
                     <p className="hero-subtitle">
-                        Instantly draft legal complaints or discover government schemes you are eligible for. Access to your rights made effortless.
+                        {t('heroSubtitle')}
                     </p>
                 </div>
                 
@@ -57,7 +59,7 @@ export default function Dashboard() {
                             <svg className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            File Complaint
+                            {t('fileComplaintTab')}
                         </div>
                     </button>
                     <button
@@ -68,7 +70,7 @@ export default function Dashboard() {
                             <svg className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            Find Schemes
+                            {t('findSchemesTab')}
                         </div>
                     </button>
                 </div>

@@ -1,36 +1,44 @@
 @echo off
-setlocal
-echo Starting NyayaSetu-AI...
 
-REM Check if npm is installed
-where npm >nul 2>nul
-if %errorlevel% neq 0 (
-    echo npm could not be found. Please install Node.js.
-    pause
-    exit /b 1
+echo ======================================
+echo Setting up Python Backend
+echo ======================================
+
+cd backend
+
+IF NOT EXIST venv (
+    echo Creating Python virtual environment...
+    python -m venv venv
 )
 
-REM Start backend
-echo Starting backend server...
-start "Backend" /D "%~dp0backend" cmd /c "if not exist node_modules (npm install) & npm run dev"
+call venv\Scripts\activate
 
-REM Start frontend
-echo Starting frontend development server...
-pushd "%~dp0frontend"
+echo Installing backend dependencies...
+pip install -r requirements.txt
 
-if not exist package.json (
-    echo package.json not found in frontend folder.
-    popd
-    pause
-    exit /b 1
+echo Starting Flask backend...
+start "Flask Backend" cmd /k "cd /d %cd% && call venv\Scripts\activate && python app.py"
+
+cd ..
+
+echo ======================================
+echo Setting up Frontend
+echo ======================================
+
+cd frontend
+
+IF NOT EXIST node_modules (
+    echo Installing frontend dependencies...
+    npm install --legacy-peer-deps
 )
 
-if not exist node_modules (
-    echo Installing dependencies for frontend...
-    call npm install --legacy-peer-deps
-)
+echo Starting Next.js frontend...
+start "NextJS Frontend" cmd /k "cd /d %cd% && npm run dev"
 
-call npm run dev
-popd
+cd ..
+
+echo ======================================
+echo Backend and Frontend are starting...
+echo ======================================
 
 pause

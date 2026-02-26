@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../lib/LanguageContext';
 import { EligibilityData } from './types';
 import { Loader } from '../../components/Loader';
 import './Scheme.css';
@@ -11,17 +12,19 @@ interface SchemeFormProps {
 }
 
 const SchemeForm: React.FC<SchemeFormProps> = ({ data, updateData, onSubmit, loading }) => {
+    const { t } = useLanguage();
+
     return (
         <div className="scheme-container">
             <div className="scheme-header">
-                <h2 className="scheme-title">Check Eligibility</h2>
-                <p className="scheme-subtitle">Fill in your details to discover government schemes.</p>
+                <h2 className="scheme-title">{t('checkEligibilityTitle')}</h2>
+                <p className="scheme-subtitle">{t('checkEligibilitySubtitle')}</p>
             </div>
 
             <div className="scheme-form-card">
                 <div className="scheme-grid">
                     <div className="scheme-input-group">
-                        <label className="scheme-label">Age</label>
+                        <label className="scheme-label">{t('ageLabel')}</label>
                         <input
                             type="number"
                             className="scheme-input"
@@ -31,33 +34,33 @@ const SchemeForm: React.FC<SchemeFormProps> = ({ data, updateData, onSubmit, loa
                     </div>
 
                     <div className="scheme-input-group">
-                        <label className="scheme-label">State</label>
+                        <label className="scheme-label">{t('stateLabel')}</label>
                         <input
                             type="text"
                             className="scheme-input"
                             value={data.state || ''}
                             onChange={(e: any) => updateData({ state: e.target.value })}
-                            placeholder="e.g. Maharashtra"
+                            placeholder={t('statePlaceholder')}
                         />
                     </div>
 
                     <div className="scheme-input-group">
-                        <label className="scheme-label">Category</label>
+                        <label className="scheme-label">{t('categoryLabel')}</label>
                         <select
                             className="scheme-select"
                             value={data.category || ''}
                             onChange={(e: any) => updateData({ category: e.target.value })}
                         >
-                            <option value="">Select Category</option>
-                            <option value="General">General</option>
-                            <option value="OBC">OBC</option>
-                            <option value="SC">SC</option>
-                            <option value="ST">ST</option>
+                            <option value="">{t('selectCategoryPlaceholder')}</option>
+                            <option value="General">{t('categoryGeneral')}</option>
+                            <option value="OBC">{t('categoryOBC')}</option>
+                            <option value="SC">{t('categorySC')}</option>
+                            <option value="ST">{t('categoryST')}</option>
                         </select>
                     </div>
 
                     <div className="scheme-input-group">
-                        <label className="scheme-label">Annual Income (₹)</label>
+                        <label className="scheme-label">{t('annualIncomeLabel')}</label>
                         <input
                             type="number"
                             className="scheme-input"
@@ -67,13 +70,13 @@ const SchemeForm: React.FC<SchemeFormProps> = ({ data, updateData, onSubmit, loa
                     </div>
 
                     <div className="scheme-input-group" style={{ gridColumn: '1 / -1' }}>
-                        <label className="scheme-label">Occupation</label>
+                        <label className="scheme-label">{t('occupationLabel')}</label>
                         <input
                             type="text"
                             className="scheme-input"
                             value={data.occupation || ''}
                             onChange={(e: any) => updateData({ occupation: e.target.value })}
-                            placeholder="e.g. Farmer, Student, Business"
+                            placeholder={t('occupationPlaceholder')}
                         />
                     </div>
                 </div>
@@ -84,7 +87,7 @@ const SchemeForm: React.FC<SchemeFormProps> = ({ data, updateData, onSubmit, loa
                         disabled={loading}
                         className="scheme-btn"
                     >
-                        {loading ? <Loader /> : "Discover Schemes"}
+                        {loading ? <Loader /> : t('discoverSchemesBtn')}
                     </button>
                 </div>
             </div>
