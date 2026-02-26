@@ -108,7 +108,7 @@ async def complaint(request: ComplaintRequest):
 async def locate(request: LocateRequest):
     return locator_service.locate_centers(request.dict())
 
-@app.get("/admin/flagged")
+@app.api_route("/admin/flagged", methods=["GET", "POST"])
 async def admin_flagged():
     mock_flagged = [
         {

@@ -27,11 +27,17 @@ export const AdminDashboard: React.FC = () => {
     const fetchFlaggedItems = async () => {
         setLoading(true);
         try {
-            // Using post because our minimal API mock only has post defined originally, 
-            // but effectively acting as a GET.
             const res = await api.post<FlaggedItem[]>('/admin/flagged', {});
-            if (res.success && res.data) {
+            if (res.success && Array.isArray(res.data)) {
                 setItems(res.data);
+            } else if (res.success && res.data && typeof res.data === 'object' && 'data' in res.data) {
+                // Secondary check for double-wrapped data
+                const innerData = (res.data as any).data;
+                if (Array.isArray(innerData)) {
+                    setItems(innerData);
+                } else {
+                    setError('Received invalid data format from server');
+                }
             } else {
                 setError(res.error || 'Failed to fetch items');
             }
