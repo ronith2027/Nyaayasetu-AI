@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 app = FastAPI(title="NyayaSetu AI Backend")
+app.router.redirect_slashes = False
 
 # Enable CORS for frontend
 app.add_middleware(
@@ -108,8 +109,9 @@ async def complaint(request: ComplaintRequest):
 async def locate(request: LocateRequest):
     return locator_service.locate_centers(request.dict())
 
-@app.api_route("/admin/flagged", methods=["GET", "POST"])
-async def admin_flagged():
+@app.get("/admin/flagged")
+@app.post("/admin/flagged")
+async def admin_flagged(data: dict = Body(None)):
     mock_flagged = [
         {
             "id": f"R-{random.randint(1000, 9999)}",
