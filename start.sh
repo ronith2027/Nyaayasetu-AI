@@ -8,6 +8,10 @@ then
     exit 1
 fi
 
+# Start backend
+echo "Starting Python backend..."
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+
 # Start frontend
 echo "Starting frontend development server..."
 cd frontend

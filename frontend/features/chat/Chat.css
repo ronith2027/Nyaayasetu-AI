@@ -1,76 +1,92 @@
 .chat-container {
-  height: 600px;
+  height: 650px;
   display: flex;
   flex-direction: column;
-  background: var(--card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 1.5rem;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 2rem;
   overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  animation: slideUp 0.5s ease-out;
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Custom Scrollbar */
+.chat-container ::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-container ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-container ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.chat-container ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .message-bubble {
-  max-width: 85%;
-  padding: 1rem 1.25rem;
+  max-width: 80%;
+  padding: 0.85rem 1.15rem;
   border-radius: 1.25rem;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.6;
   position: relative;
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .user-bubble {
-  background: linear-gradient(135deg, var(--primary), #6366f1);
+  background: #4f46e5;
   color: white;
   border-bottom-right-radius: 0.25rem;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
 }
 
 .bot-bubble {
-  background: var(--background);
-  color: var(--foreground);
-  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: #1e293b;
+  border: 1px solid #f1f5f9;
   border-bottom-left-radius: 0.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .topic-chip {
-  padding: 0.5rem 1rem;
-  background: var(--accent);
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
+  padding: 0.65rem 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .topic-chip:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
+  background: #f1f5f9;
+  color: #4f46e5;
+  border-color: #4f46e5;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
 }
 
 .thinking-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--primary);
+  width: 6px;
+  height: 6px;
+  background: #4f46e5;
   border-radius: 50%;
   display: inline-block;
   animation: pulse 1.4s infinite ease-in-out both;
@@ -87,16 +103,15 @@
 .legal-detail-card {
   margin-top: 1rem;
   padding: 1rem;
-  background: rgba(99, 102, 241, 0.05);
-  border-left: 4px solid var(--primary);
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
+  border-left: 3px solid #4f46e5;
+  border-radius: 1rem;
+  font-size: 0.85rem;
 }
 
 .chat-input-wrapper {
-  background: var(--background);
-  border-top: 1px solid var(--border);
-  padding: 1.25rem;
+  background: white;
+  border-top: 1px solid #f1f5f9;
+  padding: 1rem 1.5rem;
   display: flex;
   gap: 0.75rem;
   align-items: center;
@@ -104,17 +119,18 @@
 
 .chat-input {
   flex: 1;
-  background: var(--accent);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: var(--foreground);
-  transition: all 0.2s ease;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 0.75rem 1.25rem;
+  color: #1e293b;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
 }
 
 .chat-input:focus {
   outline: none;
-  border-color: var(--primary);
-  background: var(--background);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: #4f46e5;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.05);
 }
