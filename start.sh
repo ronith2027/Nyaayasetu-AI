@@ -10,7 +10,9 @@ fi
 
 # Start backend
 echo "Starting Python backend..."
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+cd backend
+uvicorn main:app --host 0.0.0.0 --port 8000 &
+cd ..
 
 # Start frontend
 echo "Starting frontend development server..."

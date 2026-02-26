@@ -86,7 +86,8 @@
     transition: color 0.3s;
 }
 
-.nav-item:hover {
+.nav-item:hover,
+.nav-item.active {
     color: var(--foreground);
 }
 
@@ -103,7 +104,8 @@
     transition: transform 0.3s ease;
 }
 
-.nav-item:hover::after {
+.nav-item:hover::after,
+.nav-item.active::after {
     transform: scaleX(1);
 }
 
@@ -181,7 +183,8 @@
     transition: all 0.2s ease;
 }
 
-.mobile-nav-item:hover {
+.mobile-nav-item:hover,
+.mobile-nav-item.active {
     color: var(--foreground);
     background: var(--accent);
 }

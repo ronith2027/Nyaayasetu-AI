@@ -27,7 +27,7 @@ export const AdminDashboard: React.FC = () => {
     const fetchFlaggedItems = async () => {
         setLoading(true);
         try {
-            const res = await api.post<FlaggedItem[]>('/admin/flagged', {});
+            const res = await api.get<FlaggedItem[]>('/admin/flagged');
             if (res.success && Array.isArray(res.data)) {
                 setItems(res.data);
             } else if (res.success && res.data && typeof res.data === 'object' && 'data' in res.data) {

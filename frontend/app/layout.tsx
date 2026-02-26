@@ -3,6 +3,7 @@ import './Layout.css';
 import React from 'react';
 import ClientLayoutWrapper from '../components/ClientLayoutWrapper';
 import { LanguageProvider } from '../lib/LanguageContext';
+import { AuthProvider } from '../lib/AuthContext';
 
 export const metadata = {
     title: 'NyayaSetu AI - Rural Legal Access',
@@ -42,9 +43,11 @@ export default function RootLayout({
             </head>
             <body>
                 <LanguageProvider>
-                    <ClientLayoutWrapper>
-                        {children}
-                    </ClientLayoutWrapper>
+                    <AuthProvider>
+                        <ClientLayoutWrapper>
+                            {children}
+                        </ClientLayoutWrapper>
+                    </AuthProvider>
                 </LanguageProvider>
             </body>
         </html>
