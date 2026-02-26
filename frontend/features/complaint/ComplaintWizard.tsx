@@ -5,6 +5,7 @@ import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import StepThree from './StepThree';
 import ComplaintPreview from './ComplaintPreview';
+import { useLanguage } from '../../lib/LanguageContext';
 
 const ComplaintWizard: React.FC = () => {
   const { 
@@ -19,11 +20,12 @@ const ComplaintWizard: React.FC = () => {
     submitComplaint 
   } = useComplaint();
 
+  const { t } = useLanguage();
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-center">Legal Complaint Generator</h1>
-        <p className="text-gray-600 text-center mt-2">Generate a professional draft for your legal issues</p>
+        <h1 className="text-3xl font-bold text-center">{t('legalComplaintGenerator')}</h1>
+        <p className="text-gray-600 text-center mt-2">{t('generateLegalDraft')}</p>
       </div>
 
       {error && (

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/AuthContext';
+import { useLanguage } from '../../lib/LanguageContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const { login } = useAuth();
+    const { t } = useLanguage();
 
     const validateEmail = (email: string) => {
         return /\S+@\S+\.\S+/.test(email);
@@ -23,12 +25,12 @@ export default function LoginPage() {
         setError('');
         
         if (!email || !password) {
-            setError('Please fill in all fields.');
+            setError(t('pleaseFillAllFields'));
             return;
         }
 
         if (!validateEmail(email)) {
-            setError('Please enter a valid email address.');
+            setError(t('pleaseEnterValidEmail'));
             return;
         }
 
@@ -51,35 +53,35 @@ export default function LoginPage() {
         <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center px-4">
             <div className="glass w-full max-w-md rounded-2xl p-8 shadow-xl animate-fade-in">
                 <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome Back</h1>
-                    <p className="mt-2 text-muted-foreground">Sign in to access your legal dashboard</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('welcomeBack')}</h1>
+                    <p className="mt-2 text-muted-foreground">{t('signInToAccess')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <label className="mb-2 block text-sm font-medium text-foreground">
-                            Email Address
+                            {t('emailAddress')}
                         </label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full rounded-xl border border-border bg-background/50 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                            placeholder="name@example.com"
+                            placeholder={t('emailAddress')}
                             required
                         />
                     </div>
 
                     <div>
                         <label className="mb-2 block text-sm font-medium text-foreground">
-                            Password
+                            {t('password')}
                         </label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full rounded-xl border border-border bg-background/50 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                            placeholder="••••••••"
+                            placeholder={t('password')}
                             required
                         />
                     </div>
@@ -92,10 +94,10 @@ export default function LoginPage() {
                                 onChange={(e) => setRememberMe(e.target.checked)}
                                 className="h-4 w-4 rounded border-border text-primary focus:ring-primary/20"
                             />
-                            <span className="text-sm text-muted-foreground">Remember me</span>
+                            <span className="text-sm text-muted-foreground">{t('rememberMe')}</span>
                         </label>
                         <Link href="#" className="text-sm font-medium text-primary hover:underline">
-                            Forgot password?
+                            {t('forgotPassword')}
                         </Link>
                     </div>
 
@@ -110,14 +112,14 @@ export default function LoginPage() {
                         disabled={isLoading}
                         className="sign-btn w-full !text-base !py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isLoading ? 'Signing in...' : 'Sign In'}
+                        {isLoading ? t('signingIn') : t('signIn')}
                     </button>
                 </form>
 
                 <div className="mt-8 text-center text-sm text-muted-foreground">
-                    Don't have an account?{' '}
+                    {t('dontHaveAccount')} {' '}
                     <Link href="/signup" className="font-semibold text-primary hover:underline">
-                        Sign up
+                        {t('signUpNow')}
                     </Link>
                 </div>
             </div>

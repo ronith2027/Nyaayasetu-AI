@@ -1,44 +1,75 @@
+import os
+import json
+import google.generativeai as genai
 from typing import Dict, Any, List
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Configure the Gemini API
+api_key = os.getenv("GEMINI_API_KEY")
+if api_key:
+    genai.configure(api_key=api_key)
 
 class SchemeService:
     def __init__(self):
-        # Mock data for schemes as in TypeScript handler
-        self.mock_schemes = [
-            {
-                "id": "SCH-001",
-                "name": "PM-Kisan Samman Nidhi",
-                "description": "Financial assistance to small and marginal farmers.",
-                "eligibility": "Land-holding farmers with cultivable land.",
-                "benefit": "₹6,000 per year in three installments.",
-                "criteria": lambda data: data.get('occupation') == 'farmer' and data.get('annualIncome', 0) < 200000
-            },
-            {
-                "id": "SCH-002",
-                "name": "Ayushman Bharat (PM-JAY)",
-                "description": "Health insurance for low-income families.",
-                "eligibility": "Families listed in SECC 2011 data.",
-                "benefit": "₹5 Lakh health cover per family per year.",
-                "criteria": lambda data: data.get('annualIncome', 0) < 150000
-            },
-            {
-                "id": "SCH-003",
-                "name": "Sukanya Samriddhi Yojana",
-                "description": "Savings scheme for the girl child.",
-                "eligibility": "Parents of girl child below 10 years.",
-                "benefit": "High interest rate and tax benefits.",
-                "criteria": lambda data: data.get('age', 0) < 10
-            }
-        ]
+        # We'll use the Gemini 2.5 Flash model for fast responses
+        try:
+            self.model = genai.GenerativeModel('gemini-2.5-flash')
+        except Exception as e:
+            print(f"Warning: Failed to initialize Gemini model: {e}")
+            self.model = None
 
     def get_matched_schemes(self, data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        matched_schemes = []
-        for scheme in self.mock_schemes:
-            if scheme["criteria"](data):
-                # Format to match frontend expectations
-                scheme_copy = scheme.copy()
-                del scheme_copy["criteria"]
-                scheme_copy["reasoning"] = "Matched based on your income and occupation profiles."
-                matched_schemes.append(scheme_copy)
-        return matched_schemes
+        if not self.model:
+            return []
+            
+        system_instruction = """
+        You are an AI assistant for NyayaSetu that recommends Indian government schemes to citizens based on their profile.
+        Given the user profile data, identify 2-4 highly relevant government welfare schemes, subsidies, or programs they are eligible for.
+        
+        You must respond with a JSON array where each object has the following keys exactly:
+        - "id": A unique string ID (e.g., "SCH-101")
+        - "name": Official name of the scheme
+        - "description": A concise description of the scheme
+        - "eligibility": The core eligibility criteria
+        - "benefit": The main financial or material benefit provided
+        - "reasoning": Why this scheme was matched based on their specific profile data
+        
+        Output valid JSON only without markdown formatting blocks.
+        """
+        
+        prompt = f"""
+        User Profile:
+        Age: {data.get("age")}
+        State: {data.get("state")}
+        Category: {data.get("category")}
+        Annual Income (INR): {data.get("annualIncome")}
+        Occupation: {data.get("occupation")}
+        Gender: {data.get("gender", "Not specified")}
+        """
+        
+        try:
+            response = self.model.generate_content(
+                system_instruction + "\n" + prompt,
+                generation_config=genai.types.GenerationConfig(
+                    response_mime_type="application/json",
+                    temperature=0.2
+                )
+            )
+            
+            result_json = response.text
+            schemes = json.loads(result_json)
+            
+            if not isinstance(schemes, list):
+                if isinstance(schemes, dict) and "schemes" in schemes:
+                    schemes = schemes["schemes"]
+                else:
+                    schemes = [schemes]
+                    
+            return schemes
+        except Exception as e:
+            print(f"Error fetching schemes from Gemini: {e}")
+            return []
 
 scheme_service = SchemeService()

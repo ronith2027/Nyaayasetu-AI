@@ -2,8 +2,10 @@ import React from 'react';
 import { useScheme } from './useScheme';
 import SchemeForm from './SchemeForm';
 import SchemeResults from './SchemeResults';
+import { useLanguage } from '../../lib/LanguageContext';
 
 const SchemeFeature: React.FC = () => {
+    const { t } = useLanguage();
     const {
         formData,
         schemes,
@@ -17,8 +19,8 @@ const SchemeFeature: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto py-6 md:py-8 px-4">
             <div className="mb-6 md:mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold text-center">Government Scheme Finder</h1>
-                <p className="text-sm md:text-base text-gray-600 text-center mt-2">Discover welfare schemes you are eligible for</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-center">{t('governmentSchemeFinder')}</h1>
+                <p className="text-sm md:text-base text-gray-600 text-center mt-2">{t('discoverWelfareSchemes')}</p>
             </div>
 
             {error && (

@@ -6,15 +6,13 @@ export interface ChatResponse {
   confidence_score: number;
 }
 
-export const sendChatMessage = async (message: string, language: string = 'en'): Promise<ChatResponse> => {
+import { ChatResponse, api } from '../../lib/api';
+
+export const sendChatMessage = async (formData: FormData): Promise<ChatResponse> => {
   try {
-    // Calling the designated endpoint for the isolated feature
-    const response = await fetch('/api/chat', {
+    const response = await fetch('http://127.0.0.1:8000/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message, language }),
+      body: formData,
     });
 
     if (!response.ok) {

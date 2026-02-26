@@ -2,6 +2,7 @@
 import React from 'react';
 import { ComplaintData } from './types';
 import './Complaint.css';
+import { useLanguage } from '../../lib/LanguageContext';
 
 interface StepTwoProps {
   data: ComplaintData;
@@ -11,6 +12,7 @@ interface StepTwoProps {
 }
 
 const StepTwo: React.FC<StepTwoProps> = ({ data, updateData, onNext, onPrev }) => {
+  const { t } = useLanguage();
   return (
     <div className="complaint-wizard">
       <div className="wizard-progress">
@@ -20,48 +22,48 @@ const StepTwo: React.FC<StepTwoProps> = ({ data, updateData, onNext, onPrev }) =
       </div>
 
       <div className="complaint-card">
-        <h2 className="complaint-title">Step 2: Complaint Details</h2>
+        <h2 className="complaint-title">{t('step2ComplaintDetails')}</h2>
 
         <div className="form-grid">
           <div className="form-group">
-            <label className="form-label">Opposite Party Name</label>
+            <label className="form-label">{t('oppositePartyName')}</label>
             <input
               type="text"
               className="form-input"
               value={data.oppositeParty.name || ''}
               onChange={(e: any) => updateData({ oppositeParty: { ...data.oppositeParty, name: e.target.value } })}
-              placeholder="Who are you complaining against?"
+              placeholder={t('oppositePartyName')}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Opposite Party Address</label>
+            <label className="form-label">{t('oppositePartyAddress')}</label>
             <input
               type="text"
               className="form-input"
               value={data.oppositeParty.address || ''}
               onChange={(e: any) => updateData({ oppositeParty: { ...data.oppositeParty, address: e.target.value } })}
-              placeholder="Address of the opposite party"
+              placeholder={t('oppositePartyAddress')}
             />
           </div>
 
           <div className="form-group full-width">
-            <label className="form-label">Facts of Case</label>
+            <label className="form-label">{t('factsOfCase')}</label>
             <textarea
               className="form-textarea"
               value={data.facts || ''}
               onChange={(e: any) => updateData({ facts: e.target.value })}
-              placeholder="Describe what happened in detail..."
+              placeholder={t('factsOfCase')}
             />
           </div>
         </div>
 
         <div className="form-actions">
           <button onClick={onPrev} className="btn btn-secondary">
-            &larr; Back
+            {t('back')}
           </button>
           <button onClick={onNext} className="btn btn-primary">
-            Next Step &rarr;
+            {t('nextStep')}
           </button>
         </div>
       </div>

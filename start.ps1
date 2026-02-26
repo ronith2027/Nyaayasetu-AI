@@ -23,12 +23,11 @@ if (-not (Test-Path "venv")) {
     python -m venv venv
 }
 
-Write-Host "Activating virtual environment and installing requirements..."
-& .\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+Write-Host "Installing requirements..."
+& .\venv\Scripts\python.exe -m pip install -r requirements.txt
 
 Write-Host "Starting Python backend in new window..."
-Start-Process powershell -ArgumentList "-NoExit", "-Command", ".\venv\Scripts\Activate.ps1; cd backend; python main.py"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd backend; ..\venv\Scripts\python.exe main.py"
 
 # 2. Setup Node.js Backend
 Write-Host "[2/3] Setting up Node.js backend..." -ForegroundColor Yellow

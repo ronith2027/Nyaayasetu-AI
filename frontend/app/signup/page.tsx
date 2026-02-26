@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/AuthContext';
+import { useLanguage } from '../../lib/LanguageContext';
 
 export default function SignupPage() {
     const [name, setName] = useState('');
@@ -15,6 +16,7 @@ export default function SignupPage() {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const { login } = useAuth();
+    const { t } = useLanguage();
 
     const validateEmail = (email: string) => {
         return /\S+@\S+\.\S+/.test(email);
@@ -30,27 +32,27 @@ export default function SignupPage() {
         setError('');
         
         if (!name || !email || !password || !confirmPassword) {
-            setError('Please fill in all required fields.');
+            setError(t('pleaseFillRequired'));
             return;
         }
 
         if (!validateEmail(email)) {
-            setError('Please enter a valid email address.');
+            setError(t('pleaseEnterValidEmail'));
             return;
         }
 
         if (phone && !validatePhone(phone)) {
-            setError('Please enter a valid phone number.');
+            setError(t('pleaseEnterValidPhone'));
             return;
         }
 
         if (password.length < 8) {
-            setError('Password must be at least 8 characters long.');
+            setError(t('passwordMinLength'));
             return;
         }
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match.');
+            setError(t('passwordsDoNotMatch'));
             return;
         }
 
@@ -73,42 +75,42 @@ export default function SignupPage() {
         <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center px-4">
             <div className="glass w-full max-w-md rounded-2xl p-8 shadow-xl animate-fade-in">
                 <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Create Account</h1>
-                    <p className="mt-2 text-muted-foreground">Join NyayaSetu to get legal assistance</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('createAccount')}</h1>
+                    <p className="mt-2 text-muted-foreground">{t('joinNyayaSetu')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="mb-1 block text-sm font-medium text-foreground">
-                            Full Name <span className="text-red-500">*</span>
+                            {t('fullName')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="w-full rounded-xl border border-border bg-background/50 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                            placeholder="John Doe"
+                            placeholder={t('fullName')}
                             required
                         />
                     </div>
 
                     <div>
                         <label className="mb-1 block text-sm font-medium text-foreground">
-                            Email Address <span className="text-red-500">*</span>
+                            {t('emailAddress')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full rounded-xl border border-border bg-background/50 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                            placeholder="name@example.com"
+                            placeholder={t('emailAddress')}
                             required
                         />
                     </div>
 
                     <div>
                         <label className="mb-1 block text-sm font-medium text-foreground">
-                            Phone Number (Optional)
+                            {t('phoneNumberOptional')}
                         </label>
                         <input
                             type="tel"
@@ -121,7 +123,7 @@ export default function SignupPage() {
 
                     <div>
                         <label className="mb-1 block text-sm font-medium text-foreground">
-                            Password <span className="text-red-500">*</span>
+                            {t('password')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="password"
@@ -135,7 +137,7 @@ export default function SignupPage() {
 
                     <div>
                         <label className="mb-1 block text-sm font-medium text-foreground">
-                            Confirm Password <span className="text-red-500">*</span>
+                            {t('confirmPassword')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="password"
@@ -163,9 +165,9 @@ export default function SignupPage() {
                 </form>
 
                 <div className="mt-8 text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
+                    {t('alreadyHaveAccount')} {' '}
                     <Link href="/login" className="font-semibold text-primary hover:underline">
-                        Log in
+                        {t('logIn')}
                     </Link>
                 </div>
             </div>

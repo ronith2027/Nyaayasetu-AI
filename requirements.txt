@@ -1,6 +1,7 @@
 # NyayaSetu AI - Backend Requirements
 
 # AI & LLM
+google-generativeai>=0.4.0
 boto3>=1.34.0             # AWS SDK for Bedrock
 langchain>=0.1.0          # LLM Framework
 langchain-community>=0.0.10

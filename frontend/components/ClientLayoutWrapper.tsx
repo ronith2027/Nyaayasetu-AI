@@ -7,6 +7,7 @@ import { ThemeProvider } from './theme-provider';
 import { ThemeToggle } from './theme-toggle';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../lib/AuthContext';
+import { useLanguage } from '../lib/LanguageContext';
 
 export default function ClientLayoutWrapper({
     children,
@@ -17,6 +18,7 @@ export default function ClientLayoutWrapper({
     const pathname = usePathname();
     const router = useRouter();
     const { isAuthenticated, user, logout } = useAuth();
+    const { t } = useLanguage();
 
     const isActive = (path: string) => pathname === path;
 
@@ -47,19 +49,19 @@ export default function ClientLayoutWrapper({
                         {/* Desktop Nav Routing */}
                         <div className="nav-links">
                             <Link href="/" className={`nav-item ${isActive('/') ? 'active' : ''}`}>
-                                Dashboard
+                                {t('dashboard')}
                             </Link>
                             <Link href="/locator" className={`nav-item ${isActive('/locator') ? 'active' : ''}`}>
-                                Locator
+                                {t('locator')}
                             </Link>
                             <Link href="/schemes" className={`nav-item ${isActive('/schemes') ? 'active' : ''}`}>
-                                Schemes
+                                {t('schemes')}
                             </Link>
                             <Link href="/chat" className={`nav-item ${isActive('/chat') ? 'active' : ''}`}>
-                                My Lawyer
+                                {t('myLawyer')}
                             </Link>
                             <Link href="/admin" className={`nav-item text-red-600 dark:text-red-400 font-semibold border border-red-200 dark:border-red-900/50 rounded-full px-3 py-1 ml-2 ${isActive('/admin') ? 'active' : ''}`}>
-                                Admin
+                                {t('admin')}
                             </Link>
                         </div>
 
@@ -72,18 +74,18 @@ export default function ClientLayoutWrapper({
                             {isAuthenticated ? (
                                 <div className="flex items-center gap-4">
                                     <div className="hidden sm:block text-sm font-medium text-foreground">
-                                        Hi, {user?.name.split(' ')[0]}
+                                        {t('hi')}, {user?.name.split(' ')[0]}
                                     </div>
                                     <button 
                                         onClick={() => logout()}
                                         className="text-xs font-semibold text-muted-foreground hover:text-red-500 transition-colors"
                                     >
-                                        Logout
+                                        {t('logout')}
                                     </button>
                                 </div>
                             ) : (
                                 <button onClick={handleSignClick} className="sign-btn">
-                                    Sign / App
+                                    {t('loginSignup')}
                                 </button>
                             )}
 
@@ -103,19 +105,19 @@ export default function ClientLayoutWrapper({
                         {isMobileMenuOpen && (
                             <div className="mobile-dropdown space-y-2">
                                 <Link href="/" className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                                    Dashboard
+                                    {t('dashboard')}
                                 </Link>
                                 <Link href="/locator" className={`mobile-nav-item ${isActive('/locator') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                                    Locator
+                                    {t('locator')}
                                 </Link>
                                 <Link href="/schemes" className={`mobile-nav-item ${isActive('/schemes') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                                    Schemes
+                                    {t('schemes')}
                                 </Link>
                                 <Link href="/chat" className={`mobile-nav-item ${isActive('/chat') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                                    My Lawyer
+                                    {t('myLawyer')}
                                 </Link>
                                 <Link href="/admin" className={`mobile-nav-item text-red-600 dark:text-red-400 ${isActive('/admin') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                                    Admin
+                                    {t('admin')}
                                 </Link>
 
                                 {isAuthenticated ? (
@@ -126,7 +128,7 @@ export default function ClientLayoutWrapper({
                                         }}
                                         className="mobile-nav-item text-left text-red-500 font-semibold"
                                     >
-                                        Logout ({user?.name})
+                                        {t('logout')} ({user?.name})
                                     </button>
                                 ) : (
                                     <Link 
@@ -134,7 +136,7 @@ export default function ClientLayoutWrapper({
                                         className={`mobile-nav-item ${isActive('/login') ? 'active' : ''}`} 
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
-                                        Login / Sign Up
+                                        {t('loginSignup')}
                                     </Link>
                                 )}
 

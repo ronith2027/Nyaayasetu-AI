@@ -4,7 +4,7 @@ import random
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 
-from fastapi import FastAPI, HTTPException, Body, Request
+from fastapi import FastAPI, HTTPException, Body, Request, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -83,9 +83,13 @@ from functions.scheme.services import scheme_service
 from functions.locator.services import locator_service
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
-    context = legal_chat_service.retrieve_context(request.message)
-    response_data = legal_chat_service.generate_response(request.message, context)
+async def chat(message: str = Form(...), language: str = Form("en-IN"), file: Optional[UploadFile] = File(None)):
+    pdf_bytes = None
+    if file:
+        pdf_bytes = await file.read()
+        
+    context = legal_chat_service.retrieve_context(message)
+    response_data = legal_chat_service.generate_response(message, language, context, pdf_bytes)
     return response_data
 
 @app.post("/schemes", response_model=List[SchemeResponse])
@@ -139,4 +143,4 @@ async def admin_review(request: AdminReviewRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

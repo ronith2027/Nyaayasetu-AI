@@ -42,7 +42,7 @@ if not exist node_modules (
     call npm install
 )
 echo Starting Node.js backend in new window...
-start "Node Backend" cmd /c "cd backend && npm run dev"
+start "Node Backend" cmd /k npm run dev
 popd
 
 REM 3. Setup Frontend
