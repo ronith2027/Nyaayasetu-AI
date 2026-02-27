@@ -6,11 +6,11 @@ export interface ChatResponse {
   confidence_score: number;
 }
 
-import { ChatResponse, api } from '../../lib/api';
+import { api } from '../../lib/api';
 
 export const sendChatMessage = async (formData: FormData): Promise<ChatResponse> => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/chat', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       body: formData,
     });
