@@ -32,16 +32,37 @@ export const LocatorForm: React.FC<LocatorFormProps> = ({ onSearch, loading }) =
                 />
             </div>
             <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('stateOptionalLabel')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('stateLabel')} <span className="text-red-500">*</span>
+                </label>
                 <select
                     value={stateStr}
                     onChange={(e) => setStateStr(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    required
                 >
                     <option value="">{t('selectStatePlaceholder')}</option>
                     <option value="Karnataka">Karnataka</option>
                     <option value="Maharashtra">Maharashtra</option>
                     <option value="Delhi">Delhi</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Tamil Nadu">Tamil Nadu</option>
+                    <option value="West Bengal">West Bengal</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Rajasthan">Rajasthan</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Telangana">Telangana</option>
+                    <option value="Kerala">Kerala</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Haryana">Haryana</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Odisha">Odisha</option>
+                    <option value="Jharkhand">Jharkhand</option>
+                    <option value="Chhattisgarh">Chhattisgarh</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Uttarakhand">Uttarakhand</option>
+                    <option value="Himachal Pradesh">Himachal Pradesh</option>
                 </select>
             </div>
             <Button
