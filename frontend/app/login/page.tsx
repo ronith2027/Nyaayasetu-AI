@@ -37,14 +37,28 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            // Mock authentication
-            setTimeout(() => {
-                login('User', email);
+            // Call backend authentication API
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Successful login
+                login('User', email, data.token);
                 router.push('/');
-                setIsLoading(false);
-            }, 1000);
+            } else {
+                // Login failed
+                setError(data.error || 'Login failed');
+            }
         } catch (err) {
-            setError('Invalid email or password.');
+            setError('Network error. Please try again.');
+        } finally {
             setIsLoading(false);
         }
     };

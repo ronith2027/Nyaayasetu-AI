@@ -5,6 +5,9 @@ import { adminFlaggedHandler, adminReviewHandler } from './functions/admin/admin
 import { locatorHandler } from './functions/locator/locatorHandler';
 import { handler as schemeHandler } from './functions/scheme/handler';
 import { handler as complaintHandler } from './functions/complaint/handler';
+import authRoutes from './functions/auth/authService';
+import userDataRoutes from './functions/user_data/userDataService';
+import searchRoutes from './functions/search/searchService';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -27,6 +30,16 @@ const handleResponse = (res: any, result: any) => {
     }
 };
 
+// Authentication routes
+app.use('/auth', authRoutes);
+
+// User data routes
+app.use('/user-data', userDataRoutes);
+
+// Search routes
+app.use('/search', searchRoutes);
+
+// Existing routes
 app.post('/chat', async (req: express.Request, res: express.Response) => {
     const result = await chatHandler({ body: req.body });
     handleResponse(res, result);
@@ -63,6 +76,21 @@ app.post('/complaint', async (req: express.Request, res: express.Response) => {
     handleResponse(res, result);
 });
 
+// Health check endpoint
+app.get('/health', (req: express.Request, res: express.Response) => {
+    res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
+    console.log(`Available endpoints:`);
+    console.log(`  - Authentication: /auth/*`);
+    console.log(`  - User Data: /user-data/*`);
+    console.log(`  - Search: /search/*`);
+    console.log(`  - Chat: /chat`);
+    console.log(`  - Admin: /admin/*`);
+    console.log(`  - Locator: /locate`);
+    console.log(`  - Schemes: /schemes`);
+    console.log(`  - Complaint: /complaint`);
+    console.log(`  - Health: /health`);
 });

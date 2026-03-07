@@ -59,14 +59,28 @@ export default function SignupPage() {
         setIsLoading(true);
 
         try {
-            // Mock registration
-            setTimeout(() => {
-                login(name, email);
+            // Call backend registration API
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/signup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Successful registration
+                login(name, email, data.token);
                 router.push('/');
-                setIsLoading(false);
-            }, 1000);
+            } else {
+                // Registration failed
+                setError(data.error || 'Registration failed');
+            }
         } catch (err) {
-            setError('Something went wrong. Please try again.');
+            setError('Network error. Please try again.');
+        } finally {
             setIsLoading(false);
         }
     };
