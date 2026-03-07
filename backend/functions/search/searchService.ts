@@ -193,7 +193,9 @@ router.post('/query', authenticateToken, async (req: AuthenticatedRequest, res) 
     res.json({
       query: query_text,
       results: hits,
-      total: response.body.hits.total?.value || response.body.hits.total || 0
+      total: typeof response.body.hits.total === 'number' 
+        ? response.body.hits.total 
+        : (response.body.hits.total?.value || 0)
     });
 
   } catch (error) {
@@ -250,7 +252,9 @@ router.get('/user/:userId', authenticateToken, async (req: AuthenticatedRequest,
     res.json({
       user_id: userIdNum,
       documents: hits,
-      total: response.body.hits.total?.value || response.body.hits.total || 0
+      total: typeof response.body.hits.total === 'number' 
+        ? response.body.hits.total 
+        : (response.body.hits.total?.value || 0)
     });
 
   } catch (error) {

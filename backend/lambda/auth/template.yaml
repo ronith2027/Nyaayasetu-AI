@@ -1,0 +1,594 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Serverless Authentication Backend with Lambda and DynamoDB'
+
+Parameters:
+  TableName:
+    Type: String
+    Default: 'Users'
+    Description: 'Name of the DynamoDB table for users'
+
+Resources:
+  # DynamoDB Table
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TableName
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: 'user_id-index'
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  # IAM Role for Lambda functions
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: 'AuthLambdaExecutionRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: 'DynamoDBAccessPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt UsersTable.Arn
+                  - !Sub '${UsersTable.Arn}/index/*'
+
+  # Signup Lambda Function
+  SignupFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: 'auth-signup'
+      Runtime: python3.9
+      Handler: signup.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 30
+      Environment:
+        Variables:
+          JWT_SECRET: 'your-super-secret-jwt-key-change-this-in-production'
+          TABLE_NAME: !Ref TableName
+      Code:
+        ZipFile: |
+          import json
+          import bcrypt
+          import uuid
+          import boto3
+          from datetime import datetime
+          from botocore.exceptions import ClientError
+          
+          # Initialize DynamoDB client
+          dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+          users_table = dynamodb.Table('${TableName}')
+          
+          def lambda_handler(event, context):
+              """
+              Lambda handler for user signup
+              """
+              try:
+                  # Parse request body
+                  body = json.loads(event.get('body', '{}'))
+                  
+                  # Extract fields
+                  full_name = body.get('full_name', '').strip()
+                  email = body.get('email', '').strip().lower()
+                  phone_number = body.get('phone_number', '').strip()
+                  password = body.get('password', '')
+                  confirm_password = body.get('confirm_password', '')
+                  
+                  # Validate required fields
+                  errors = []
+                  if not full_name:
+                      errors.append('Full name is required')
+                  if not email:
+                      errors.append('Email address is required')
+                  if not password:
+                      errors.append('Password is required')
+                  if not confirm_password:
+                      errors.append('Confirm password is required')
+                  
+                  if errors:
+                      return {
+                          'statusCode': 400,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Validation failed',
+                              'details': errors
+                          })
+                      }
+                  
+                  # Validate email format
+                  if '@' not in email or '.' not in email:
+                      return {
+                          'statusCode': 400,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Invalid email format'
+                          })
+                      }
+                  
+                  # Validate password match
+                  if password != confirm_password:
+                      return {
+                          'statusCode': 400,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Passwords do not match'
+                          })
+                      }
+                  
+                  # Check if email already exists
+                  try:
+                      response = users_table.get_item(
+                          Key={'email': email}
+                      )
+                      
+                      if 'Item' in response:
+                          return {
+                              'statusCode': 409,
+                              'headers': {
+                                  'Content-Type': 'application/json',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                              },
+                              'body': json.dumps({
+                                  'success': False,
+                                  'error': 'Email already exists'
+                              })
+                          }
+                  except ClientError as e:
+                      print(f"DynamoDB error checking email: {e}")
+                      return {
+                          'statusCode': 500,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Database error'
+                          })
+                      }
+                  
+                  # Hash password
+                  try:
+                      password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                  except Exception as e:
+                      print(f"Password hashing error: {e}")
+                      return {
+                          'statusCode': 500,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Password processing failed'
+                          })
+                      }
+                  
+                  # Create user item
+                  user_item = {
+                      'user_id': str(uuid.uuid4()),
+                      'full_name': full_name,
+                      'email': email,
+                      'phone_number': phone_number if phone_number else None,
+                      'password_hash': password_hash,
+                      'created_at': datetime.utcnow().isoformat()
+                  }
+                  
+                  # Remove None values
+                  user_item = {k: v for k, v in user_item.items() if v is not None}
+                  
+                  # Save to DynamoDB
+                  try:
+                      users_table.put_item(Item=user_item)
+                  except ClientError as e:
+                      print(f"DynamoDB error saving user: {e}")
+                      return {
+                          'statusCode': 500,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Failed to create user'
+                          })
+                      }
+                  
+                  # Success response
+                  return {
+                      'statusCode': 201,
+                      'headers': {
+                          'Content-Type': 'application/json',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                      },
+                      'body': json.dumps({
+                          'success': True,
+                          'message': 'User created successfully',
+                          'user': {
+                              'user_id': user_item['user_id'],
+                              'full_name': user_item['full_name'],
+                              'email': user_item['email'],
+                              'phone_number': user_item.get('phone_number')
+                          }
+                      })
+                  }
+                  
+              except Exception as e:
+                  print(f"Unexpected error: {e}")
+                  return {
+                      'statusCode': 500,
+                      'headers': {
+                          'Content-Type': 'application/json',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                      },
+                      'body': json.dumps({
+                          'success': False,
+                          'error': 'Internal server error'
+                      })
+                  }
+
+  # Login Lambda Function
+  LoginFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: 'auth-login'
+      Runtime: python3.9
+      Handler: login.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 30
+      Environment:
+        Variables:
+          JWT_SECRET: 'your-super-secret-jwt-key-change-this-in-production'
+          TABLE_NAME: !Ref TableName
+      Code:
+        ZipFile: |
+          import json
+          import bcrypt
+          import jwt
+          import boto3
+          from datetime import datetime, timedelta
+          from botocore.exceptions import ClientError
+          
+          # Initialize DynamoDB client
+          dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+          users_table = dynamodb.Table('${TableName}')
+          
+          # JWT Secret (should be stored in environment variables)
+          JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production'
+          JWT_EXPIRATION_HOURS = 24
+          
+          def lambda_handler(event, context):
+              """
+              Lambda handler for user login
+              """
+              try:
+                  # Parse request body
+                  body = json.loads(event.get('body', '{}'))
+                  
+                  # Extract fields
+                  email = body.get('email', '').strip().lower()
+                  password = body.get('password', '')
+                  
+                  # Validate required fields
+                  errors = []
+                  if not email:
+                      errors.append('Email address is required')
+                  if not password:
+                      errors.append('Password is required')
+                  
+                  if errors:
+                      return {
+                          'statusCode': 400,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Validation failed',
+                              'details': errors
+                          })
+                      }
+                  
+                  # Validate email format
+                  if '@' not in email or '.' not in email:
+                      return {
+                          'statusCode': 400,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Invalid email format'
+                          })
+                      }
+                  
+                  # Find user by email
+                  try:
+                      response = users_table.get_item(
+                          Key={'email': email}
+                      )
+                      
+                      if 'Item' not in response:
+                          return {
+                              'statusCode': 401,
+                              'headers': {
+                                  'Content-Type': 'application/json',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                              },
+                              'body': json.dumps({
+                                  'success': False,
+                                  'error': 'Invalid credentials'
+                              })
+                          }
+                      
+                      user = response['Item']
+                      stored_password_hash = user.get('password_hash', '')
+                      
+                  except ClientError as e:
+                      print(f"DynamoDB error finding user: {e}")
+                      return {
+                          'statusCode': 500,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Database error'
+                          })
+                      }
+                  
+                  # Compare password with stored hash
+                  try:
+                      if not bcrypt.checkpw(password.encode('utf-8'), stored_password_hash.encode('utf-8')):
+                          return {
+                              'statusCode': 401,
+                              'headers': {
+                                  'Content-Type': 'application/json',
+                                  'Access-Control-Allow-Origin': '*',
+                                  'Access-Control-Allow-Headers': 'Content-Type',
+                                  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                              },
+                              'body': json.dumps({
+                                  'success': False,
+                                  'error': 'Invalid credentials'
+                              })
+                          }
+                  except Exception as e:
+                      print(f"Password verification error: {e}")
+                      return {
+                          'statusCode': 500,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Authentication failed'
+                          })
+                      }
+                  
+                  # Generate JWT token
+                  try:
+                      payload = {
+                          'user_id': user['user_id'],
+                          'email': user['email'],
+                          'full_name': user['full_name'],
+                          'exp': datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS),
+                          'iat': datetime.utcnow()
+                      }
+                      
+                      token = jwt.encode(payload, JWT_SECRET, algorithm='HS256')
+                      
+                  except Exception as e:
+                      print(f"JWT generation error: {e}")
+                      return {
+                          'statusCode': 500,
+                          'headers': {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                              'Access-Control-Allow-Headers': 'Content-Type',
+                              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                          },
+                          'body': json.dumps({
+                              'success': False,
+                              'error': 'Token generation failed'
+                          })
+                      }
+                  
+                  # Success response
+                  return {
+                      'statusCode': 200,
+                      'headers': {
+                          'Content-Type': 'application/json',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                      },
+                      'body': json.dumps({
+                          'success': True,
+                          'message': 'Login successful',
+                          'token': token,
+                          'user': {
+                              'user_id': user['user_id'],
+                              'full_name': user['full_name'],
+                              'email': user['email'],
+                              'phone_number': user.get('phone_number')
+                          }
+                      })
+                  }
+                  
+              except Exception as e:
+                  print(f"Unexpected error: {e}")
+                  return {
+                      'statusCode': 500,
+                      'headers': {
+                          'Content-Type': 'application/json',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Headers': 'Content-Type',
+                          'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                      },
+                      'body': json.dumps({
+                          'success': False,
+                          'error': 'Internal server error'
+                      })
+                  }
+
+  # API Gateway
+  ApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: 'AuthAPI'
+      Description: 'Authentication API Gateway'
+
+  # API Gateway Resource for Signup
+  SignupResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      PathPart: 'signup'
+
+  # API Gateway Method for Signup
+  SignupMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ResourceId: !Ref SignupResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SignupFunction.Arn}/invocations'
+      RequestTemplates:
+        application/json: '{"body": $input.json("$")}'
+      IntegrationResponses:
+        - StatusCode: 200
+          ResponseTemplates:
+            application/json: '$input.path("$")'
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
+
+  # API Gateway Resource for Login
+  LoginResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      PathPart: 'login'
+
+  # API Gateway Method for Login
+  LoginMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ResourceId: !Ref LoginResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LoginFunction.Arn}/invocations'
+      RequestTemplates:
+        application/json: '{"body": $input.json("$")}'
+      IntegrationResponses:
+        - StatusCode: 200
+          ResponseTemplates:
+            application/json: '$input.path("$")'
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
+
+  # Lambda Permission for API Gateway
+  SignupPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt SignupFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+
+  LoginPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LoginFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+
+Outputs:
+  ApiUrl:
+    Description: 'API Gateway URL'
+    Value: !Sub 'https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod'

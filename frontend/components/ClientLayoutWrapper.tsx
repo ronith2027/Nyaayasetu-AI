@@ -57,9 +57,11 @@ export default function ClientLayoutWrapper({
                             <Link href="/schemes" className={`nav-item ${isActive('/schemes') ? 'active' : ''}`}>
                                 {t('schemes')}
                             </Link>
-                            <Link href="/chat" className={`nav-item ${isActive('/chat') ? 'active' : ''}`}>
-                                {t('myLawyer')}
-                            </Link>
+                            {isAuthenticated && (
+                                <Link href="/my-lawyer" className={`nav-item ${isActive('/my-lawyer') ? 'active' : ''}`}>
+                                    {t('myLawyer')}
+                                </Link>
+                            )}
                             <Link href="/admin" className={`nav-item text-red-600 dark:text-red-400 font-semibold border border-red-200 dark:border-red-900/50 rounded-full px-3 py-1 ml-2 ${isActive('/admin') ? 'active' : ''}`}>
                                 {t('admin')}
                             </Link>
@@ -113,9 +115,11 @@ export default function ClientLayoutWrapper({
                                 <Link href="/schemes" className={`mobile-nav-item ${isActive('/schemes') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                                     {t('schemes')}
                                 </Link>
-                                <Link href="/chat" className={`mobile-nav-item ${isActive('/chat') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                                    {t('myLawyer')}
-                                </Link>
+                                {isAuthenticated && (
+                                    <Link href="/my-lawyer" className={`mobile-nav-item ${isActive('/my-lawyer') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                                        {t('myLawyer')}
+                                    </Link>
+                                )}
                                 <Link href="/admin" className={`mobile-nav-item text-red-600 dark:text-red-400 ${isActive('/admin') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                                     {t('admin')}
                                 </Link>
