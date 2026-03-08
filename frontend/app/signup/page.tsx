@@ -60,7 +60,7 @@ export default function SignupPage() {
         setIsLoading(true);
 
         try {
-            const data = await authApi.signup(email, password);
+            const data = await authApi.signup(email, password, name, phone, confirmPassword);
             login(name, email, data.token);
             router.push('/');
         } catch (err: any) {

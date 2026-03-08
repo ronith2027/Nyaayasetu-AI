@@ -12,8 +12,10 @@ const AUTH_API_BASE_URL =
   'http://localhost:8000';
 
 export interface User {
-  userId: number;
+  userId: string | number;
   email: string;
+  full_name?: string;
+  phone_number?: string;
 }
 
 export interface LoginResponse {
@@ -39,7 +41,31 @@ const authClient = axios.create({
   baseURL: AUTH_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
+});
+
+// Add debug logs to auth requests
+authClient.interceptors.request.use((config) => {
+  console.log(`[Auth API] Sending ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`);
+  console.log('[Auth API] Request payload:', config.data);
+  return config;
+}, (error) => {
+  console.error('[Auth API] Request error:', error);
+  return Promise.reject(error);
+});
+
+authClient.interceptors.response.use((response) => {
+  console.log(`[Auth API] Received response from: ${response.config.url}`, response.status);
+  return response;
+}, (error) => {
+  console.error('[Auth API] Response error:', {
+    url: error.config?.url,
+    status: error.response?.status,
+    data: error.response?.data,
+    message: error.message
+  });
+  return Promise.reject(error);
 });
 
 // Add request interceptor to include auth token
@@ -49,6 +75,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log(`[Core API] Sending ${config.method?.toUpperCase()} to ${config.url}`);
     return config;
   },
   (error) => {
@@ -91,11 +118,20 @@ export const authApi = {
   },
 
   // Signup user
-  signup: async (email: string, password: string): Promise<LoginResponse> => {
+  signup: async (
+    email: string,
+    password: string,
+    fullName?: string,
+    phoneNumber?: string,
+    confirmPassword?: string
+  ): Promise<LoginResponse> => {
     try {
-      const response = await authClient.post('/auth/signup', {
+      const response = await axios.post('/api/signup', {
         email,
         password,
+        full_name: fullName,
+        phone_number: phoneNumber,
+        confirm_password: confirmPassword,
       });
       const data = response.data;
       
@@ -105,6 +141,11 @@ export const authApi = {
       
       return data;
     } catch (error: any) {
+      console.error('[Signup API Error]', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       throw error.response?.data || { error: 'Signup failed' };
     }
   },

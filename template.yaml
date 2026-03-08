@@ -18,6 +18,13 @@ Parameters:
     Type: String
     Description: Secret used to sign JWTs (provide via parameter store or CLI)
     Default: fallback-secret
+  StageName:
+    Type: String
+    Description: API Gateway stage name (dev or prod)
+    Default: prod
+    AllowedValues:
+      - dev
+      - prod
 
 Resources:
   UsersTable:
@@ -52,7 +59,7 @@ Resources:
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: prod
+      StageName: !Ref StageName
       Cors:
         AllowOrigin: '*'
         AllowHeaders: '*'
@@ -88,7 +95,7 @@ Resources:
 Outputs:
   ApiEndpoint:
     Description: URL of the API Gateway endpoint
-    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod
+    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${StageName}
   AuthFunctionArn:
     Description: ARN of the Auth Lambda function
     Value: !GetAtt AuthFunction.Arn

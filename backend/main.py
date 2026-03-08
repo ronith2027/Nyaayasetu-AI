@@ -44,7 +44,7 @@ app.add_middleware(
 # --------------------------------------------------------------
 # Router imports (relative)
 # --------------------------------------------------------------
-from .auth_router import router as auth_router
+from .fastapi_auth_wrapper import router as auth_router
 from .user_data_router import router as user_data_router
 from .search_router import router as search_router
 

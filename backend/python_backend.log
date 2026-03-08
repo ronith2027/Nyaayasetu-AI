@@ -1,6 +1,6 @@
 INFO:     Will watch for changes in these directories: ['/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend']
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [62781] using StatReload
+INFO:     Started reloader process [36952] using StatReload
 Process SpawnProcess-1:
 Traceback (most recent call last):
   File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/process.py", line 320, in _bootstrap
@@ -47,4 +47,4 @@ Traceback (most recent call last):
     ...<3 lines>...
     )
 ImportError: attempted relative import with no known parent package
-INFO:     Stopping reloader process [62781]
+INFO:     Stopping reloader process [36952]
