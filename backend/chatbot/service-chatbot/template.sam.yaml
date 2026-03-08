@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Chatbot microservice (Lambda container image + HTTP API)'
+
+Parameters:
+  VectorBucket:
+    Type: String
+    Default: 'legal-rag-storage'
+
+  VectorIndexKey:
+    Type: String
+    Default: 'faiss/constitution.index'
+
+  VectorChunksKey:
+    Type: String
+    Default: 'faiss/chunks.json'
+
+  EmbedModelId:
+    Type: String
+    Default: 'amazon.titan-embed-text-v2:0'
+
+  ChatModelId:
+    Type: String
+    Default: 'anthropic.claude-3-haiku-20240307-v1:0'
+
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 1024
+
+Resources:
+  ChatbotApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - POST
+          - OPTIONS
+
+  ChatbotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Environment:
+        Variables:
+          VECTOR_BUCKET: !Ref VectorBucket
+          VECTOR_INDEX_KEY: !Ref VectorIndexKey
+          VECTOR_CHUNKS_KEY: !Ref VectorChunksKey
+          EMBED_MODEL_ID: !Ref EmbedModelId
+          CHAT_MODEL_ID: !Ref ChatModelId
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref VectorBucket
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: '*'
+      Events:
+        Chat:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ChatbotApi
+            Path: /chat
+            Method: POST
+        ChatOptions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ChatbotApi
+            Path: /chat
+            Method: OPTIONS
+    Metadata:
+      DockerContext: .
+      Dockerfile: Dockerfile
+      DockerTag: latest
+
+Outputs:
+  ApiUrl:
+    Description: 'HTTP API endpoint base URL'
+    Value: !Sub 'https://${ChatbotApi}.execute-api.${AWS::Region}.amazonaws.com'
+  ChatEndpoint:
+    Description: 'Chat endpoint'
+    Value: !Sub 'https://${ChatbotApi}.execute-api.${AWS::Region}.amazonaws.com/chat'

@@ -30,7 +30,7 @@ export default function SignupPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        
+
         if (!name || !email || !password || !confirmPassword) {
             setError(t('pleaseFillRequired'));
             return;
@@ -60,7 +60,7 @@ export default function SignupPage() {
 
         try {
             // Call backend registration API
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/signup`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://x8eaonh7x2.execute-api.ap-south-1.amazonaws.com'}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

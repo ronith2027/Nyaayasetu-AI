@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://x8eaonh7x2.execute-api.ap-south-1.amazonaws.com';
 
 export interface User {
   userId: number;
@@ -59,11 +59,11 @@ export const authApi = {
     try {
       const response = await api.post('/auth/login', { email, password });
       const data = response.data;
-      
+
       // Store token and user data
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('auth_user', JSON.stringify(data.user));
-      
+
       return data;
     } catch (error: any) {
       throw error.response?.data || { error: 'Login failed' };
@@ -75,11 +75,11 @@ export const authApi = {
     try {
       const response = await api.post('/auth/signup', { email, password });
       const data = response.data;
-      
+
       // Store token and user data
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('auth_user', JSON.stringify(data.user));
-      
+
       return data;
     } catch (error: any) {
       throw error.response?.data || { error: 'Signup failed' };

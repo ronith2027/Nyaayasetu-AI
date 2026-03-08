@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Authentication microservice (Lambda container image + DynamoDB + HTTP API)'
+
+Parameters:
+  TableName:
+    Type: String
+    Default: 'Users'
+    Description: 'Name of the DynamoDB table for users'
+
+  JwtSecret:
+    Type: String
+    Default: 'your-super-secret-jwt-key-change-this-in-production'
+    Description: 'JWT signing secret (override in production)'
+
+  JwtExpirationHours:
+    Type: Number
+    Default: 24
+    Description: 'JWT expiration in hours'
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+
+Resources:
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TableName
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: 'user_id-index'
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  AuthApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - POST
+          - OPTIONS
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+          JWT_SECRET: !Ref JwtSecret
+          JWT_EXPIRATION_HOURS: !Ref JwtExpirationHours
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
+      Events:
+        Signup:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /auth/signup
+            Method: POST
+        Login:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /auth/login
+            Method: POST
+        SignupOptions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /auth/signup
+            Method: OPTIONS
+        LoginOptions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /auth/login
+            Method: OPTIONS
+    Metadata:
+      DockerContext: .
+      Dockerfile: Dockerfile
+      DockerTag: latest
+
+Outputs:
+  ApiUrl:
+    Description: 'HTTP API endpoint base URL'
+    Value: !Sub 'https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com'

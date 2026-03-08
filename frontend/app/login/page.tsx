@@ -23,7 +23,7 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        
+
         if (!email || !password) {
             setError(t('pleaseFillAllFields'));
             return;
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
         try {
             // Call backend authentication API
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://x8eaonh7x2.execute-api.ap-south-1.amazonaws.com'}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
