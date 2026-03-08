@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/AuthContext';
 import { useLanguage } from '../../lib/LanguageContext';
+import { authApi } from '../../lib/auth';
 
 export default function SignupPage() {
     const [name, setName] = useState('');
@@ -59,27 +60,11 @@ export default function SignupPage() {
         setIsLoading(true);
 
         try {
-            // Call backend registration API
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Successful registration
-                login(name, email, data.token);
-                router.push('/');
-            } else {
-                // Registration failed
-                setError(data.error || 'Registration failed');
-            }
-        } catch (err) {
-            setError('Network error. Please try again.');
+            const data = await authApi.signup(email, password);
+            login(name, email, data.token);
+            router.push('/');
+        } catch (err: any) {
+            setError(err?.error || 'Registration failed');
         } finally {
             setIsLoading(false);
         }

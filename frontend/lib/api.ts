@@ -1,14 +1,7 @@
-import axios from 'axios';
-
-// Real API wrapper for NyayaSetu
-const BASE_URL = 'http://127.0.0.1:8000';
-
-const apiClient = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// Central API base URL for frontend
+// Uses NEXT_PUBLIC_API_URL when available, falls back to localhost:8000 (FastAPI backend)
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, '') || 'http://localhost:8000';
 
 export interface ApiResponse<T> {
   success: boolean;

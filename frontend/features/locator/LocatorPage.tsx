@@ -26,7 +26,7 @@ export const LocatorPage: React.FC = () => {
         }
 
         try {
-            const locations = await fetchAllLegalLocations(stateStr);
+            const locations = await fetchAllLegalLocations(pincode, stateStr);
             
             if (locations.length === 0) {
                 setError(`No police stations or courts found in ${stateStr}. Please try a different state.`);

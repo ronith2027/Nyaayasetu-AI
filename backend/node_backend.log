@@ -1,0 +1,83 @@
+
+> backend@1.0.0 dev
+> nodemon index.ts
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: ts,json[39m
+[32m[nodemon] starting `ts-node index.ts`[39m
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+Server running on port 5001
+Available endpoints:
+  - Authentication: /auth/*
+  - User Data: /user-data/*
+  - Search: /search/*
+  - Chat: /chat
+  - Admin: /admin/*
+  - Locator: /locate
+  - Schemes: /schemes
+  - Complaint: /complaint
+  - Health: /health
+Error initializing user data database, switching to memory mode: Error: Access denied for user 'root'@'localhost' (using password: NO)
+    at PromisePool.execute (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/node_modules/mysql2/lib/promise/pool.js:54:22)
+    at initializeUserDataDb (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/functions/user_data/userDataService.ts:37:22)
+    at Object.<anonymous> (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/functions/user_data/userDataService.ts:58:1)
+    at Module._compile (node:internal/modules/cjs/loader:1734:14)
+    at Module.m._compile (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/node_modules/ts-node/src/index.ts:1618:23)
+    at loadTS (node:internal/modules/cjs/loader:1826:10)
+    at Object.require.extensions.<computed> [as .ts] (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1469:32)
+    at Module._load (node:internal/modules/cjs/loader:1286:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  code: 'ER_ACCESS_DENIED_ERROR',
+  errno: 1045,
+  sql: undefined,
+  sqlState: '28000',
+  sqlMessage: "Access denied for user 'root'@'localhost' (using password: NO)"
+}
+Error initializing auth database, switching to memory mode: Error: Access denied for user 'root'@'localhost' (using password: NO)
+    at PromisePool.execute (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/node_modules/mysql2/lib/promise/pool.js:54:22)
+    at initializeAuthDb (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/functions/auth/authService.ts:38:18)
+    at Object.<anonymous> (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/functions/auth/authService.ts:53:1)
+    at Module._compile (node:internal/modules/cjs/loader:1734:14)
+    at Module.m._compile (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/node_modules/ts-node/src/index.ts:1618:23)
+    at loadTS (node:internal/modules/cjs/loader:1826:10)
+    at Object.require.extensions.<computed> [as .ts] (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1469:32)
+    at Module._load (node:internal/modules/cjs/loader:1286:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  code: 'ER_ACCESS_DENIED_ERROR',
+  errno: 1045,
+  sql: undefined,
+  sqlState: '28000',
+  sqlMessage: "Access denied for user 'root'@'localhost' (using password: NO)"
+}
+Error initializing OpenSearch index, switching to memory mode: ConnectionError: Connection Error
+    at ClientRequest.onError (/Users/saiabhinav/Desktop/NyaayaSetu-AI/backend/node_modules/@opensearch-project/opensearch/lib/Connection.js:129:16)
+    at ClientRequest.emit (node:events:507:28)
+    at ClientRequest.emit (node:domain:489:12)
+    at emitErrorEvent (node:_http_client:104:11)
+    at TLSSocket.socketErrorListener (node:_http_client:518:5)
+    at TLSSocket.emit (node:events:507:28)
+    at TLSSocket.emit (node:domain:489:12)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  meta: {
+    body: null,
+    statusCode: null,
+    headers: null,
+    meta: {
+      context: null,
+      request: [Object],
+      name: 'opensearch-js',
+      connection: [Object],
+      attempts: 3,
+      aborted: false
+    }
+  }
+}

@@ -63,9 +63,10 @@ DATE: ________________
             "data": {
                 "complaint_text": complaint_text,
                 "sections_referenced": sections,
-                "download_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                # PDF is now generated on the frontend from the formatted draft
+                "download_url": None,
             },
-            "error": None
+            "error": None,
         }
 
 complaint_service = ComplaintService()

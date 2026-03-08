@@ -2,23 +2,26 @@
 
 # AI & LLM
 google-generativeai>=0.4.0
-boto3>=1.34.0             # AWS SDK for Bedrock
-langchain>=0.1.0          # LLM Framework
-langchain-community>=0.0.10
-langchain-aws>=0.0.1      # Bedrock integration for LangChain
+google-cloud-aiplatform>=1.38.0
 
 # API Framework
 fastapi>=0.109.0
 uvicorn>=0.27.0
 pydantic>=2.5.0
+pydantic-settings>=2.1.0
 python-multipart>=0.0.6
 
-# RAG & Vector Search
-sentence-transformers>=2.3.0
-faiss-cpu>=1.7.4
-numpy>=1.26.0
-
-# Utils
+# Database & Utils
 python-dotenv>=1.0.0
 requests>=2.31.0
 typing-extensions>=4.9.0
+mysql-connector-python>=9.0.0
+opensearch-py>=2.7.0
+bcrypt>=4.1.2
+PyJWT>=2.8.0
+boto3>=1.35.0
+
+# Optional/Future: Vector Search (if RAG is expanded)
+# sentence-transformers>=2.3.0
+# faiss-cpu>=1.7.4
+# numpy>=1.26.0

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import jsPDF from 'jspdf';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { ComplaintDraft } from './types';
@@ -10,6 +11,37 @@ interface ComplaintPreviewProps {
 }
 
 const ComplaintPreview: React.FC<ComplaintPreviewProps> = ({ draft }) => {
+  const handleDownloadPdf = () => {
+    const text = draft.formattedDraft || draft.complaint_text || '';
+    if (!text) return;
+
+    const doc = new jsPDF({
+      orientation: 'p',
+      unit: 'pt',
+      format: 'a4',
+    });
+
+    const margin = 40;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const maxWidth = pageWidth - margin * 2;
+
+    const lines = doc.splitTextToSize(text, maxWidth);
+    let y = margin;
+
+    for (const line of lines) {
+      if (y > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y);
+      y += 18;
+    }
+
+    const filename = draft.draftId ? `complaint_${draft.draftId}.pdf` : 'complaint.pdf';
+    doc.save(filename);
+  };
+
   return (
     <Card className="p-6 space-y-6 bg-white border shadow-sm">
       <div className="border-b pb-4">
@@ -24,8 +56,8 @@ const ComplaintPreview: React.FC<ComplaintPreviewProps> = ({ draft }) => {
       <div className="flex flex-col md:flex-row gap-4 justify-center pt-8 border-t mt-8">
         <Button 
           className="btn btn-primary w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 text-lg"
-          onClick={() => draft?.download_url && window.open(draft.download_url, '_blank')}
-          disabled={!draft?.download_url}
+          onClick={handleDownloadPdf}
+          disabled={!draft?.formattedDraft && !draft?.complaint_text}
         >
           <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

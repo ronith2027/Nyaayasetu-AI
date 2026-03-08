@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/AuthContext';
 import { useLanguage } from '../../lib/LanguageContext';
+import { authApi } from '../../lib/auth';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -37,27 +38,11 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            // Call backend authentication API
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Successful login
-                login('User', email, data.token);
-                router.push('/');
-            } else {
-                // Login failed
-                setError(data.error || 'Login failed');
-            }
-        } catch (err) {
-            setError('Network error. Please try again.');
+            const data = await authApi.login(email, password);
+            login('User', email, data.token);
+            router.push('/');
+        } catch (err: any) {
+            setError(err?.error || 'Login failed');
         } finally {
             setIsLoading(false);
         }

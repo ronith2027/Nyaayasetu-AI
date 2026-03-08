@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+// Optional separate base URL for auth (e.g. AWS API Gateway / Lambda)
+const AUTH_API_BASE_URL =
+  (process.env.NEXT_PUBLIC_AUTH_API_URL &&
+    process.env.NEXT_PUBLIC_AUTH_API_URL.replace(/\/+$/, '')) ||
+  (process.env.NEXT_PUBLIC_API_URL &&
+    process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '')) ||
+  'http://localhost:8000';
 
 export interface User {
   userId: number;
@@ -17,9 +26,17 @@ export interface AuthError {
   error: string;
 }
 
-// Create axios instance with default config
+// Create axios instance with default config (for core backend)
 const api = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Separate axios instance for auth so it can point to AWS independently
+const authClient = axios.create({
+  baseURL: AUTH_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -57,7 +74,10 @@ export const authApi = {
   // Login user
   login: async (email: string, password: string): Promise<LoginResponse> => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await authClient.post('/auth/login', {
+        email,
+        password,
+      });
       const data = response.data;
       
       // Store token and user data
@@ -73,7 +93,10 @@ export const authApi = {
   // Signup user
   signup: async (email: string, password: string): Promise<LoginResponse> => {
     try {
-      const response = await api.post('/auth/signup', { email, password });
+      const response = await authClient.post('/auth/signup', {
+        email,
+        password,
+      });
       const data = response.data;
       
       // Store token and user data

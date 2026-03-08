@@ -1,50 +1,21 @@
 #!/usr/bin/env bash
 
-# NyayaSetu-AI unified ecosystem starter (Python-only backend)
-# - Starts Python FastAPI backend (AI, auth, user data, search)
-# - Starts Next.js frontend
-# - Keeps ports and .env in sync with latest project structure
+# Unified dev helper for NyayaSetu-AI (Python-only backend)
+# - Ensures frontend API URL points to FastAPI
+# - Kills stray processes on dev ports
+# - Starts FastAPI backend and Next.js frontend in watch/dev mode
 
 set -e
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# --- Configuration ---
-
 PYTHON_PORT="${PYTHON_PORT:-8000}"
 FRONTEND_PORT="${FRONTEND_PORT:-3000}"
 
-echo "🚀 Starting NyayaSetu-AI ecosystem"
+echo "🔧 NyayaSetu-AI dev helper"
 echo "  Python backend : ${PYTHON_PORT}"
 echo "  Frontend       : ${FRONTEND_PORT}"
 echo
-
-# --- Dependency Checks ---
-
-if ! command -v npm >/dev/null 2>&1; then
-  echo "❌ Error: npm is not installed. Please install Node.js."
-  exit 1
-fi
-
-if ! command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then
-  echo "❌ Error: Python is not installed."
-  exit 1
-fi
-
-# Install Python dependencies if needed
-if [ ! -d "${ROOT_DIR}/.venv" ]; then
-  echo "📦 Creating virtual environment..."
-  python3 -m venv "${ROOT_DIR}/.venv"
-fi
-source "${ROOT_DIR}/.venv/bin/activate"
-if ! pip freeze | grep -q "boto3"; then
-  echo "🔧 Installing Python dependencies..."
-  pip install -r "${ROOT_DIR}/requirements.txt"
-fi
-
-PYTHON_CMD="$(command -v python3 || command -v python)"
-
-# --- Helper: kill ports ---
 
 kill_port() {
   local port="$1"
@@ -59,10 +30,8 @@ kill_port() {
 echo "▶ Ensuring no stale dev servers are running..."
 kill_port "${PYTHON_PORT}"
 kill_port "${FRONTEND_PORT}"
+
 echo
-
-# --- Ensure frontend .env.local points to FastAPI ---
-
 echo "▶ Ensuring frontend .env.local exists and points to FastAPI..."
 FRONTEND_DIR="${ROOT_DIR}/frontend"
 ENV_EXAMPLE="${FRONTEND_DIR}/.env.example"
@@ -71,6 +40,7 @@ ENV_LOCAL="${FRONTEND_DIR}/.env.local"
 mkdir -p "${FRONTEND_DIR}"
 
 if [ -f "${ENV_LOCAL}" ]; then
+  # Update or insert NEXT_PUBLIC_API_URL line
   if grep -q "^NEXT_PUBLIC_API_URL=" "${ENV_LOCAL}"; then
     sed -i.bak "s|^NEXT_PUBLIC_API_URL=.*$|NEXT_PUBLIC_API_URL=http://localhost:${PYTHON_PORT}|" "${ENV_LOCAL}"
     rm -f "${ENV_LOCAL}.bak"
@@ -103,21 +73,15 @@ if [ ! -d "node_modules" ]; then
 fi
 
 echo
-echo "▶ Starting services..."
+echo "▶ Starting FastAPI backend and frontend..."
 
-# 1. Start Python FastAPI backend
 cd "${ROOT_DIR}/backend"
+PYTHON_CMD="$(command -v python3 || command -v python)"
 PYTHON_LOG="${ROOT_DIR}/backend/python_backend.log"
 echo "🐍 Starting Python backend on port ${PYTHON_PORT} (logging to ${PYTHON_LOG})..."
 "${PYTHON_CMD}" -m uvicorn main:app --host 0.0.0.0 --port "${PYTHON_PORT}" --reload > "${PYTHON_LOG}" 2>&1 &
 PYTHON_PID=$!
 
-# Optional: Run SAM local API for the Lambda (commented out by default)
-# echo "🛠️ Starting SAM local API for Lambda auth backend..."
-# sam local start-api -t "${ROOT_DIR}/template.yaml" --port 3001 &
-# SAM_PID=$!
-
-# 2. Start frontend
 cd "${ROOT_DIR}/frontend"
 echo "💻 Starting frontend on port ${FRONTEND_PORT}..."
 PORT="${FRONTEND_PORT}" npm run dev &
@@ -125,18 +89,9 @@ FRONTEND_PID=$!
 
 cleanup() {
   echo
-  echo "🛑 Stopping all services..."
-  if [ -n "${PYTHON_PID:-}" ]; then
-    kill "${PYTHON_PID}" 2>/dev/null || true
-  fi
-  if [ -n "${FRONTEND_PID:-}" ]; then
-    kill "${FRONTEND_PID}" 2>/dev/null || true
-  fi
-  # Stop SAM local API if it was started
-  if [ -n "${SAM_PID:-}" ]; then
-    kill "${SAM_PID}" 2>/dev/null || true
-  fi
-  wait "${PYTHON_PID:-}" "${FRONTEND_PID:-}" "${SAM_PID:-}" 2>/dev/null || true
+  echo "🛑 Stopping dev servers..."
+  kill "${PYTHON_PID}" "${FRONTEND_PID}" 2>/dev/null || true
+  wait "${PYTHON_PID}" "${FRONTEND_PID}" 2>/dev/null || true
 }
 
 trap cleanup SIGINT SIGTERM
