@@ -12,6 +12,7 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     login: (name: string, email: string, token?: string) => void;
+    signup: (name: string, email: string, token?: string) => void;
     logout: () => void;
     isLoading: boolean;
 }
@@ -69,6 +70,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    const signup = (name: string, email: string, token?: string) => {
+        const newUser = { name, email };
+        setUser(newUser);
+        localStorage.setItem('auth_user', JSON.stringify(newUser));
+        
+        // Store token if provided (for JWT authentication)
+        if (token) {
+            localStorage.setItem('auth_token', token);
+        }
+    };
+
     const logout = () => {
         setUser(null);
         localStorage.removeItem('auth_user');
@@ -78,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, signup, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

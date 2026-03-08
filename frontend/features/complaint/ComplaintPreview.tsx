@@ -1,6 +1,4 @@
-
-import React from 'react';
-import jsPDF from 'jspdf';
+import React, { useState } from 'react';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { ComplaintDraft } from './types';
@@ -11,35 +9,56 @@ interface ComplaintPreviewProps {
 }
 
 const ComplaintPreview: React.FC<ComplaintPreviewProps> = ({ draft }) => {
-  const handleDownloadPdf = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleDownloadPdf = async () => {
     const text = draft.formattedDraft || draft.complaint_text || '';
     if (!text) return;
 
-    const doc = new jsPDF({
-      orientation: 'p',
-      unit: 'pt',
-      format: 'a4',
-    });
+    setIsLoading(true);
+    
+    try {
+      // Dynamically import jspdf only when needed
+      const { default: jsPDF } = await import('jspdf');
+      
+      const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'pt',
+        format: 'a4',
+      });
 
-    const margin = 40;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const maxWidth = pageWidth - margin * 2;
+      // Add content to PDF
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 40;
+      const fontSize = 12;
+      const lineHeight = 16;
 
-    const lines = doc.splitTextToSize(text, maxWidth);
-    let y = margin;
+      doc.setFontSize(fontSize);
+      doc.text('Legal Complaint', margin, margin);
 
-    for (const line of lines) {
-      if (y > pageHeight - margin) {
-        doc.addPage();
-        y = margin;
-      }
-      doc.text(line, margin, y);
-      y += 18;
+      // Split text into lines
+      const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+      let yPosition = margin + 40;
+
+      lines.forEach((line: string) => {
+        if (yPosition > pageHeight - margin) {
+          doc.addPage();
+          yPosition = margin;
+        }
+        doc.text(line, margin, yPosition);
+        yPosition += lineHeight;
+      });
+
+      // Save the PDF
+      const filename = draft.draftId ? `complaint_${draft.draftId}.pdf` : 'complaint.pdf';
+      doc.save(filename);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-
-    const filename = draft.draftId ? `complaint_${draft.draftId}.pdf` : 'complaint.pdf';
-    doc.save(filename);
   };
 
   return (
@@ -57,12 +76,21 @@ const ComplaintPreview: React.FC<ComplaintPreviewProps> = ({ draft }) => {
         <Button 
           className="btn btn-primary w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 text-lg"
           onClick={handleDownloadPdf}
-          disabled={!draft?.formattedDraft && !draft?.complaint_text}
+          disabled={(!draft?.formattedDraft && !draft?.complaint_text) || isLoading}
         >
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Download PDF
+          {isLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              Generating PDF...
+            </>
+          ) : (
+            <>
+              <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download PDF
+            </>
+          )}
         </Button>
         <Button 
           className="btn btn-success w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 text-lg"

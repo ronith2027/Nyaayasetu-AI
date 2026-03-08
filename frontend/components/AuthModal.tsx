@@ -23,19 +23,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setError('');
 
     try {
-      const result = isLogin 
-        ? await login(email, password)
-        : await signup(email, password);
-
-      if (result.success) {
-        onClose();
-        // Reset form
-        setEmail('');
-        setPassword('');
-        setError('');
+      // For now, just simulate authentication with the context methods
+      // In a real implementation, you would call the API services here
+      if (isLogin) {
+        login(email, password);
       } else {
-        setError(result.error || 'Authentication failed');
+        signup(email, password);
       }
+
+      onClose();
+      // Reset form
+      setEmail('');
+      setPassword('');
+      setError('');
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred');
     } finally {

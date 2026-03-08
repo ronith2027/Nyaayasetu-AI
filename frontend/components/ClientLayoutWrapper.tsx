@@ -62,6 +62,11 @@ export default function ClientLayoutWrapper({
                                     {t('myLawyer')}
                                 </Link>
                             )}
+                            {isAuthenticated && (
+                                <Link href="/my-files" className={`nav-item ${isActive('/my-files') ? 'active' : ''}`}>
+                                    {t('myFiles')}
+                                </Link>
+                            )}
                             <Link href="/admin" className={`nav-item text-red-600 dark:text-red-400 font-semibold border border-red-200 dark:border-red-900/50 rounded-full px-3 py-1 ml-2 ${isActive('/admin') ? 'active' : ''}`}>
                                 {t('admin')}
                             </Link>
@@ -118,6 +123,11 @@ export default function ClientLayoutWrapper({
                                 {isAuthenticated && (
                                     <Link href="/my-lawyer" className={`mobile-nav-item ${isActive('/my-lawyer') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                                         {t('myLawyer')}
+                                    </Link>
+                                )}
+                                {isAuthenticated && (
+                                    <Link href="/my-files" className={`mobile-nav-item ${isActive('/my-files') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                                        {t('myFiles')}
                                     </Link>
                                 )}
                                 <Link href="/admin" className={`mobile-nav-item text-red-600 dark:text-red-400 ${isActive('/admin') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
